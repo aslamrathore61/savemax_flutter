@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "962268433852",
+    "project_id": "savemax-flutter-mobile-app",
+    "storage_bucket": "savemax-flutter-mobile-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:962268433852:android:b0bf54d0ff04ab6db36fb9",
+        "android_client_info": {
+          "package_name": "com.app.savemax"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3zDZRG00wmk42OiMVYZQ5AHMahRoOGxc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
