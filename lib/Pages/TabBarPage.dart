@@ -4,6 +4,8 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_dynamic_icon/flutter_dynamic_icon.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -180,6 +182,12 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
     setState(() {}); // Update the UI after checking initial connectivity
   }
 
+ /* enum AppIcon {
+  black,
+  gradient,
+  galaxy,
+}*/
+
   @override
   Widget build(BuildContext context) {
     double statusBarHeight = MediaQuery
@@ -190,10 +198,22 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
       margin: EdgeInsets.only(top: statusBarHeight),
       child: Scaffold(
         key: _scaffoldKey,
-       /* floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            CallAppIconChangerMethod(
-                ".MainActivityB");
+    /*    floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            try {
+              // Check if the device supports alternate icons
+              if (await FlutterDynamicIcon.supportsAlternateIcons) {
+                // Change the icon
+                await FlutterDynamicIcon.setAlternateIconName('gradient');
+              }else {
+                print('notSupportAlternativeIcon');
+              }
+            } on PlatformException catch (_) {
+              print('Failed to change app icon');
+            }
+
+            *//*CallAppIconChangerMethod(
+                ".MainActivityB");*//*
           },
         ),*/
         drawer: Container(
@@ -337,9 +357,15 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             GestureDetector(
-                              onTap: () {
-                                CallAppIconChangerMethod(
-                                    ".MainActivityA");
+                              onTap: () async {
+                                if (await FlutterDynamicIcon.supportsAlternateIcons) {
+                                  // Change the icon
+                                  await FlutterDynamicIcon.setAlternateIconName('black');
+                                }else {
+                                  print('notSupportAlternativeIcon');
+                                }
+                               /* CallAppIconChangerMethod(
+                                    ".MainActivityA");*/
                               },
                               child: Padding(
                                 padding:
@@ -398,13 +424,13 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
                       controller: _webViewController
                         ..setJavaScriptMode(JavaScriptMode.unrestricted)
                         ..setBackgroundColor(const Color(0x00000000))
-                        ..addJavaScriptChannel(
-                          'ShareChannel',
+                        /*..addJavaScriptChannel(
+                          'ShareChannelOBJ',
                           onMessageReceived: (JavaScriptMessage message) {
                             print('ShareChannelOBJ: ${message.message}');
 
                           },
-                        )
+                        )*/
                         ..setNavigationDelegate(
                           NavigationDelegate(
                               onProgress: (int progress) {

@@ -78,12 +78,12 @@ class ApiProvider {
   /***  Native Item Get From API ***/
 
   Future<NativeItem> fetchMenuDetails() async {
-    configureDio();
+    //configureDio();
 
 
 
     try{
-      Response response = await _dio.get('${_baseUrl}getSaveMaxMenuItemss');
+      Response response = await _dio.get('${_baseUrl}getSaveMaxMenuItems');
       var BottomMenu = response.data['BottomMenu']['Bottom'] as List?;
       var SideMenu = response.data['SideMenu']['Side'] as List?;
 
