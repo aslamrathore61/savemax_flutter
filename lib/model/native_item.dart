@@ -8,10 +8,13 @@ class NativeItem {
   List<Bottom>? bottom;
   @HiveField(1)
   List<Side>? side;
+  @HiveField(2)
+  List<Profile>? profile;
 
   NativeItem({
     this.bottom,
     this.side,
+    this.profile,
   });
 
   factory NativeItem.fromJson(Map<String, dynamic> json) {
@@ -26,7 +29,12 @@ class NativeItem {
       List<Side> sideItems = sideList.map((i) => Side.fromJson(i)).toList();
       return NativeItem(side: sideItems);
     }
-    return NativeItem(bottom: [], side: []);
+    if (json['Profile'] != null) {
+      var sideList = json['Profile'] as List;
+      List<Profile> profileItems = sideList.map((i) => Profile.fromJson(i)).toList();
+      return NativeItem(profile: profileItems);
+    }
+    return NativeItem(bottom: [], side: [], profile: []);
   }
 
   Map<String, dynamic> toJson() {
@@ -36,6 +44,9 @@ class NativeItem {
     }
     if (this.side != null) {
       data['Side'] = side?.map((v) => v.toJson()).toList();
+    }
+    if (this.profile != null) {
+      data['Profile'] = profile?.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -159,6 +170,40 @@ class SubItem {
     data['URL'] = this.uRL;
     data['id'] = this.id;
     data['menuIcon'] = this.menuIcon;
+    return data;
+  }
+}
+
+
+
+@HiveType(typeId: 4)
+class Profile {
+  @HiveField(0)
+  String? title;
+  @HiveField(1)
+  String? icon;
+  @HiveField(2)
+  String? uRL;
+  @HiveField(3)
+  String? id;
+
+  Profile({this.title, this.icon, this.uRL, this.id});
+
+  factory Profile.fromJson(Map<String, dynamic> json) {
+    return Profile(
+      title: json['title'],
+      icon: json['icon'],
+      uRL: json['URL'],
+      id: json['id'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['title'] = this.title;
+    data['icon'] = this.icon;
+    data['URL'] = this.uRL;
+    data['id'] = this.id;
     return data;
   }
 }

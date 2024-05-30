@@ -19,17 +19,20 @@ class NativeItemAdapter extends TypeAdapter<NativeItem> {
     return NativeItem(
       bottom: (fields[0] as List?)?.cast<Bottom>(),
       side: (fields[1] as List?)?.cast<Side>(),
+      profile: (fields[2] as List?)?.cast<Profile>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, NativeItem obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.bottom)
       ..writeByte(1)
-      ..write(obj.side);
+      ..write(obj.side)
+      ..writeByte(2)
+      ..write(obj.profile);
   }
 
   @override
@@ -101,14 +104,15 @@ class SideAdapter extends TypeAdapter<Side> {
       icon: fields[1] as String?,
       uRL: fields[2] as String?,
       id: fields[3] as String?,
-      subList: (fields[4] as List?)?.cast<SubItem>(),
+      menuIcon: fields[4] is String ? fields[4] as String? : null,
+      subList: (fields[5] as List?)?.cast<SubItem>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, Side obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.title)
       ..writeByte(1)
@@ -118,6 +122,8 @@ class SideAdapter extends TypeAdapter<Side> {
       ..writeByte(3)
       ..write(obj.id)
       ..writeByte(4)
+      ..write(obj.menuIcon)
+      ..writeByte(5)
       ..write(obj.subList);
   }
 
@@ -147,11 +153,57 @@ class SubItemAdapter extends TypeAdapter<SubItem> {
       icon: fields[1] as String?,
       uRL: fields[2] as String?,
       id: fields[3] as String?,
+      menuIcon: fields[4] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, SubItem obj) {
+    writer
+      ..writeByte(5)
+      ..writeByte(0)
+      ..write(obj.title)
+      ..writeByte(1)
+      ..write(obj.icon)
+      ..writeByte(2)
+      ..write(obj.uRL)
+      ..writeByte(3)
+      ..write(obj.id)
+      ..writeByte(4)
+      ..write(obj.menuIcon);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SubItemAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class ProfileAdapter extends TypeAdapter<Profile> {
+  @override
+  final int typeId = 4;
+
+  @override
+  Profile read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Profile(
+      title: fields[0] as String?,
+      icon: fields[1] as String?,
+      uRL: fields[2] as String?,
+      id: fields[3] as String?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, Profile obj) {
     writer
       ..writeByte(4)
       ..writeByte(0)
@@ -170,7 +222,7 @@ class SubItemAdapter extends TypeAdapter<SubItem> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SubItemAdapter &&
+      other is ProfileAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

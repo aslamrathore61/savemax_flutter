@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../Utils/constants.dart';
+
 class NoInternetConnectionPage extends StatefulWidget {
   final VoidCallback tryAgain;
 
@@ -30,6 +32,78 @@ class _NoInternetConnectionPageState extends State<NoInternetConnectionPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          Container(
+              height: 58,
+              width: double.infinity,
+              color: greyColor,
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: Image.asset(
+                      'assets/icons/savemaxdoller.png',
+                      width: 27,
+                      height: 27,
+                    ),
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: Container(
+                      margin: EdgeInsets.only(top: 8, bottom: 8),
+                      height: double.infinity,
+                      color: Colors.white,
+                      child: const Row(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(left: 8.0, right: 8.0),
+                            child: Icon(
+                              Icons.location_on,
+                              size: 17,
+                            ),
+                          ),
+                          Text(
+                            'Toronto',
+                            style: TextStyle(fontSize: 13),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      margin: const EdgeInsets.only(
+                        top: 8,
+                        bottom: 8,
+                      ),
+                      height: double.infinity,
+                      color: darkGreyColor,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding:
+                            EdgeInsets.only(left: 10.0, right: 6.0),
+                            child: Icon(Icons.close, size: 16),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(left: 6.0, right: 10.0),
+                            child: Icon(
+                              Icons.search,
+                              size: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const Expanded(
+                      flex: 0,
+                      child: SizedBox(
+                        width: 33,
+                      )),
+                ],
+              )),
           Expanded(
             flex: 3,
             child: Container(

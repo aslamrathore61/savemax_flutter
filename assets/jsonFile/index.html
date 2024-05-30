@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Example Page</title>
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f0f0f0;
+          padding: 20px;
+        }
+        h1 {
+          color: #333;
+        }
+        p {
+          color: #666;
+        }
+    </style>
+    <script>
+        function sendToFlutter() {
+         if (window.NativeJavascriptInterface) {
+        window.NativeJavascriptInterface.generateToken()
+    } else if (
+        window.webkit &&
+        window.webkit.messageHandlers.NativeJavascriptInterface
+    ) {
+        // Call iOS interface
+        window.webkit.messageHandlers.NativeJavascriptInterface.postMessage(
+            'callPostMessage'
+        )
+    }else if (window.FlutterChannel) {
+         // Call Flutter code
+         window.FlutterChannel.postMessage("GenerateFCMToken");
+
+    } else {
+        // No Android or iOS, Flutter interface found
+        console.log('No native APIs found.')
+        window.setToken(null)
+    }
+        }
+    </script>
+</head>
+<body>
+<h1>Hello, Flutter!</h1>
+<p>This is an example HTML file loaded into a WebView in a Flutter app.</p>
+<button onclick="sendToFlutter()">Send Message to Flutter</button>
+</body>
+</html>

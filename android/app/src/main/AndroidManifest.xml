@@ -11,11 +11,18 @@
         android:usesCleartextTraffic="true"
         >
 
+
         <activity
             android:name=".savemax_flutter.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
-            android:theme="@style/LaunchTheme"/>
+            android:theme="@style/LaunchTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
 
 
         <activity-alias

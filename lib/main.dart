@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:savemax_flutter/model/user_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Component/UpdateMaintainance/ForceUpdateScreen.dart';
 import 'Component/UpdateMaintainance/MaintenanceScreen.dart';
@@ -39,6 +40,16 @@ Future<void> main() async {
     sound: true,
   );
 
+  Future<void> initializeHive() async {
+    await Hive.initFlutter();
+    Hive.registerAdapter(NativeItemAdapter());
+    Hive.registerAdapter(BottomAdapter());
+    Hive.registerAdapter(SideAdapter());
+    Hive.registerAdapter(SubItemAdapter());
+    Hive.registerAdapter(ProfileAdapter());
+    Hive.registerAdapter(UserInfoAdapter());
+  }
+
   final fcmToken = await messaging.getToken();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   print('fcmToakenValue ${fcmToken}');
@@ -63,21 +74,16 @@ Future<void> main() async {
     sound: true,
   );
 
+  await initializeHive();
 
-  await Hive.initFlutter();
-  Hive.registerAdapter(NativeItemAdapter());
-  Hive.registerAdapter(BottomAdapter());
-  Hive.registerAdapter(SideAdapter());
-  Hive.registerAdapter(SubItemAdapter());
+
 
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   runApp(MaterialApp(
-    // Disable screenshots
-
     themeMode: ThemeMode.light, // Always use light theme
-    theme: ThemeData.light(), // Define light theme
+      theme: ThemeData(fontFamily: 'Poppins',),
     home: RepositoryProvider(
 
       create: (context) => ApiProvider(),
@@ -85,16 +91,11 @@ Future<void> main() async {
     ),
     routes: {
       '/home': (context) {
-        final args = ModalRoute.of(context)!.settings.arguments;
-        if (args is NativeItem) {
-         return TabBarPage(nativeItem: args);
-       //   return ForceUpdateScreen();
-       //    return MaintenanceScreen();
-        } else {
-          // Handle the case where the arguments are not of the expected type.
-          // You can show an error message or navigate to a different page.
-          return Container();
-        }
+        final Map<String, dynamic> args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+        final UserInfo? userInfo = args['userInfo'];
+        final NativeItem nativeItem = args['nativeItem'];
+        return TabBarPage(nativeItem: nativeItem, userInfo: userInfo,);
       },
     },
 
