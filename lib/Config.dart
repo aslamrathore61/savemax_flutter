@@ -6,7 +6,6 @@ class Config {
  // static const String HOME_URL = "https://savemax.com";
  // static const String HOME_URL = "https://uat1.savemax.com/";
   static const String HOME_URL = "http://172.17.10.112:3000/";
- // static const String HOME_URL = "http://172.17.10.112:3000/";
 
   static const String LOGOUT_ID = "db3579dffc5b4fb984143fa55e411344";
   static const String CURRENCY_ID = "494efec28a7144db969a26ad98da58bf";
@@ -28,7 +27,5 @@ class Config {
   static const String REQUEST_APP_VERSION = "requestAppVersion";
   static const String LANUAGE_ID = "language_ID";
   static const String LANUAGE_URL = "language_url";
-
-
 
 }

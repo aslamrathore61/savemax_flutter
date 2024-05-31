@@ -51,7 +51,7 @@ class TabBarPage extends StatefulWidget {
 /// [TickerProviderStateMixin].
 class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
   late final TabController _tabController;
-  late WebViewController _webViewController;
+  late WebViewController _webViewController = WebViewController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool isProfileMenuVisible = false;
   bool userDetailsAvaible = false;
@@ -61,6 +61,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
   String mSelectedLanguageURL = "";
   File? _image;
   final picker = ImagePicker();
+  late String deepLinkingURL;
 
   final Connectivity _connectivity = Connectivity();
   late Stream<ConnectivityResult> _connectivityStream;
@@ -148,11 +149,11 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
     } else {
       deepLinkingURL = Config.HOME_URL;
     }
-    setState(() {
-      _webViewController.loadRequest(Uri.parse(deepLinkingURL));
-      // _webViewController.loadHtmlString(html);
-      javaScriptCall(_webViewController, context);
-    });
+    javaScriptCall(_webViewController,context);
+
+    _webViewController.loadRequest(Uri.parse(deepLinkingURL));
+ //   _webViewController.loadHtmlString(html);
+
   }
 
   void CallAppIconChangerMethod(String message) async {
@@ -168,6 +169,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
       _userInfo = widget.userInfo;
     }
 
+
     _connectivityStream = _connectivity.onConnectivityChanged;
 
     print("nativeitemProfile ${widget.nativeItem.profile?.length}");
@@ -179,27 +181,26 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
       length: widget.nativeItem.bottom!.length,
       vsync: this,
     );
-    _webViewController = WebViewController();
+
+
     // Load the initial URL for the first tab
     if (widget.nativeItem.bottom!.isNotEmpty &&
         widget.nativeItem.bottom![0].uRL!.isNotEmpty) {
-      setState(() {
-        String deepLinkingURL;
 
-        if (widget.nativeItem.bottom![0].uRL != null) {
-          Uri uri = Uri.parse(widget.nativeItem.bottom![0].uRL!);
-          String segmentPath = uri.path + '?' + uri.query;
-          deepLinkingURL = Config.HOME_URL + segmentPath;
-        } else {
-          deepLinkingURL = Config.HOME_URL;
-        }
+      if (widget.nativeItem.bottom![0].uRL != null) {
+        Uri uri = Uri.parse(widget.nativeItem.bottom![0].uRL!);
+        String segmentPath = uri.path + '?' + uri.query;
+        deepLinkingURL = Config.HOME_URL + segmentPath;
+      } else {
+        deepLinkingURL = Config.HOME_URL;
+      }
+      javaScriptCall(_webViewController,context);
+      _webViewController.loadRequest(Uri.parse(deepLinkingURL));
+     // _webViewController.loadHtmlString(html);
 
-        // _webViewController.loadHtmlString(html);
-        _webViewController.loadRequest(Uri.parse(deepLinkingURL));
-        //  _webViewController.loadRequest(Uri.parse(Config.HOME_URL));
-        javaScriptCall(_webViewController, context);
-      });
     }
+
+
   }
 
   @override
@@ -232,10 +233,11 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
         }
 
         setState(() {
+          javaScriptCall(_webViewController,context);
           _webViewController.loadRequest(Uri.parse(deepLinkingURL));
-          //  _webViewController.loadHtmlString(html);
-          javaScriptCall(_webViewController, context);
+        // _webViewController.loadHtmlString(html);
         });
+
       } else {
         _launchUrl(url);
       }
@@ -425,6 +427,8 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
                                       title: widget
                                           .nativeItem.profile![index].title!,
                                       onTap: (String url, String id) async {
+
+
                                         // use this id for logout clear local cookie
                                         if (id == Config.LOGOUT_ID) {
                                           await _webViewController.clearCache();
@@ -477,7 +481,11 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
                                   widget.nativeItem.side![index].menuIcon!,
                               subList: widget.nativeItem.side![index].subList!,
                               title: widget.nativeItem.side![index].title!,
-                              onTap: (String url, String id) async {
+                              onTap: (String url, String id, String icon) async {
+
+
+                                print('parentURL ${url} ParentID ${id}');
+
                                 int _index = 0;
                                 int foundIndex = -1;
                                 widget.nativeItem.bottom?.forEach((element) {
@@ -487,25 +495,27 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
                                   }
                                   _index++;
                                 });
-                                print('LanguageIDdd ${url}');
-                                print('LanguageIDdd ${widget.nativeItem.side![index].id!}');
 
-                                if (widget.nativeItem.side![index].id! ==
-                                    Config.CURRENCY_ID) {
+
+                                if (widget.nativeItem.side![index].id! == Config.CURRENCY_ID) {
+                                  print('LanguageIDdd ${widget.nativeItem.side![index].id!}');
                                   print('LanguageID ${url}');
-                                  _webViewController
-                                      .runJavaScript('changeCurrency("$url")');
                                   mSelectedLanguageID = id;
                                   mSelectedLanguageURL = url;
-                                  await setPrefStringValue(
-                                      Config.LANUAGE_ID, id);
-                                  await setPrefStringValue(
-                                      Config.LANUAGE_URL, url);
+
+                                  String jsCode = '{"currency": "${url}", "symbol": "${icon}"}';
+                                  _webViewController.runJavaScript('changeCurrency(`$jsCode`)');
+                                  await setPrefStringValue(Config.LANUAGE_ID, id);
+                                  await setPrefStringValue(Config.LANUAGE_URL, url);
                                   // handle
                                 } else if (foundIndex != -1) {
+                                  print('parentURL  1111');
+
                                   _tabController.index = foundIndex;
                                   _onTabTapped(foundIndex, url);
                                 } else {
+                                  print('parentURL  2222');
+
                                   _onTabTapped(0, url);
                                 }
 
@@ -555,6 +565,8 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
                                   return WebViewWidget(
                                     controller: _webViewController
                                       ..enableZoom(false)
+                                     // ..loadHtmlString(html)
+                                    // ..loadRequest(Uri.parse(deepLinkingURL))
                                       ..setJavaScriptMode(
                                           JavaScriptMode.unrestricted)
                                       ..setBackgroundColor(
@@ -568,6 +580,10 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
                                         }, onPageFinished: (String url) {
                                           // _webViewController.clearLocalStorage();
                                           print('onPageFinished $url');
+                                          setState(() {
+                                            print('webPageFailedToLoad $webPageFailedToLoad');
+                                            webPageFailedToLoad = false;
+                                          });
                                         }, onWebResourceError:
                                                 (WebResourceError error) {
                                           print(
@@ -666,7 +682,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
       WebViewController webViewController, BuildContext context) {
     webViewController.addJavaScriptChannel('FlutterChannel',
         onMessageReceived: (message) async {
-      //  print('FlutterChannelDetails ${message.message}');
+       print('FlutterChannelDetails ${message.message}');
       try {
         var data = jsonDecode(message.message);
         if (data is Map<String, dynamic>) {
@@ -684,19 +700,26 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
 
   Future<void> _handleJsonMessageUserInfo(Map<String, dynamic> data) async {
     try {
-      final UserInfo userInfo = UserInfo.fromJson(data);
 
-      // Open the Hive box
-      var box = await Hive.openBox<UserInfo>(Config.USER_INFO_BOX);
+      if(data['action'] == 'Share') {
+        print('actionshare ${data['action']}');
+        shareURL(data['text'],data['url']);
+       //title
+      }else{
+        final UserInfo userInfo = UserInfo.fromJson(data);
+        var box = await Hive.openBox<UserInfo>(Config.USER_INFO_BOX);
+        await box.put(Config.USER_INFO_KEY, userInfo);
+        setState(() {
+          _userInfo = userInfo;
+          userDetailsAvaible = true;
+        });
+      }
 
-      // Store the UserInfo object in the box
-      await box.put(Config.USER_INFO_KEY, userInfo);
 
-      setState(() {
-        print('setStateCall ${userInfo.name}');
-        _userInfo = userInfo;
-        userDetailsAvaible = true;
-      });
+
+
+
+
     } catch (e) {
       print('Error saving user info: $e');
     }
@@ -713,8 +736,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
       final versionNumber = packageInfo.version;
       final bundleNumber = packageInfo.buildNumber;
       print('versionNumber $versionNumber : bundleNumber $bundleNumber');
-      String jsCode =
-          '{"versionNumber": "${versionNumber}", "bundleNumber": "${bundleNumber}"}';
+      String jsCode = '{"versionNumber": "${versionNumber}", "bundleNumber": "${bundleNumber}"}';
       webViewController.runJavaScript('getVersion(`$jsCode`)');
 
       //  String jsCode = '{"logoutvalue"}';
@@ -860,6 +882,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
   }
 }
 
+
 String html = """
 <html>
 <head>
@@ -878,35 +901,33 @@ String html = """
         }
     </style>
     <script>
-    function sendToFlutter() {
-        if (window.NativeJavascriptInterface) {
-            window.NativeJavascriptInterface.generateToken();
-        } else if (
-            window.webkit &&
-            window.webkit.messageHandlers.NativeJavascriptInterface
-        ) {
-            // Call iOS interface
-            window.webkit.messageHandlers.NativeJavascriptInterface.postMessage(
-                'callPostMessage'
-            );
-        } else if (window.FlutterChannel) {
-        //  window.FlutterChannel.postMessage("getBottomToolbar");
-            const data = {
-         action: "GenerateFCMToken",
-         userId: "12345",
-         userName: "JohnDoe"
+
+        function sendToFlutter() {
+       //   if (window.FlutterChannel) {
+       //   const data = {
+       //   action: "GenerateFCMToken",
+       //   userId: "12345",
+       //   userName: "JohnDoe"
+       // };
+       
+       if(window.FlutterChannel) {
+ 	 const data = {
+          	action: "Share",
+         	 title: "SaveMax",
+       		  text: "Check out this awesome content!",
+		        url: "https://savemax.com/toronto/121-st-patrick-st/c8385680"
        };
+          
+              console.log('Calling')
+
        window.FlutterChannel.postMessage(JSON.stringify(data));
-        } else {
-            // No Android or iOS, Flutter interface found
-            console.log('No native APIs found.');
-            window.setToken(null);
-        }
+} else {
+        // No Android or iOS, Flutter interface found
+        console.log('No native APIs found.')
+        window.setToken(null)
     }
-    
-
-</script>
-
+        }
+    </script>
 </head>
 <body>
 <h1>Hello, Flutter!</h1>

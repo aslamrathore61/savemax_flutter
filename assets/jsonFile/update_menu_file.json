@@ -99,7 +99,7 @@
         ]
       },
       {
-        "title": "AUD",
+        "title": "",
         "icon": "PHN2ZyBzdHJva2U9ImN1cnJlbnRDb2xvciIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIyIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgaGVpZ2h0PSIxZW0iIHdpZHRoPSIxZW0iIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggc3Ryb2tlPSJub25lIiBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIj48L3BhdGg+PHBhdGggZD0iTTkgMTRjMCAxLjY1NyAyLjY4NiAzIDYgM3M2IC0xLjM0MyA2IC0zcy0yLjY4NiAtMyAtNiAtM3MtNiAxLjM0MyAtNiAzeiI+PC9wYXRoPjxwYXRoIGQ9Ik05IDE0djRjMCAxLjY1NiAyLjY4NiAzIDYgM3M2IC0xLjM0NCA2IC0zdi00Ij48L3BhdGg+PHBhdGggZD0iTTMgNmMwIDEuMDcyIDEuMTQ0IDIuMDYyIDMgMi41OThzNC4xNDQgLjUzNiA2IDBjMS44NTYgLS41MzYgMyAtMS41MjYgMyAtMi41OThjMCAtMS4wNzIgLTEuMTQ0IC0yLjA2MiAtMyAtMi41OThzLTQuMTQ0IC0uNTM2IC02IDBjLTEuODU2IC41MzYgLTMgMS41MjYgLTMgMi41OTh6Ij48L3BhdGg+PHBhdGggZD0iTTMgNnYxMGMwIC44ODggLjc3MiAxLjQ1IDIgMiI+PC9wYXRoPjxwYXRoIGQ9Ik0zIDExYzAgLjg4OCAuNzcyIDEuNDUgMiAyIj48L3BhdGg+PC9zdmc+",
         "menuIcon": "",
         "URL": "https://savemax.com/buy/toronto-real-estate",
@@ -107,79 +107,79 @@
         "Sub": [
           {
             "title": "CAD - Canadian Dollar",
-            "icon": "",
+            "icon": "$",
             "URL": "CAD",
             "id": "0d3bbe23b26c4042b79e50b7697db12a"
           },
           {
             "title": "INR - Indian Rupee",
-            "icon": "",
+            "icon": "₹",
             "URL": "INR",
             "id": "d15375df3c44403087b2e1a88e1365f0"
           },
           {
             "title": "AUD - Australian Dollar",
-            "icon": "",
+            "icon": "$",
             "URL": "AUD",
             "id": "92dcf4c7cdeb444a9fa274fcd702485e"
           },
           {
             "title": "CNY - Chinese Renminbi",
-            "icon": "",
+            "icon": "¥",
             "URL": "CNY",
             "id": "e7263fdc0cdc4b34adf3ea32b80f1275"
           },
           {
             "title": "EUR - EURO (European)",
-            "icon": "",
+            "icon": "€",
             "URL": "EUR",
             "id": "6558d69b1b584c14943bc583e4059769"
           },
           {
             "title": "GBP - UK Pound Sterling",
-            "icon": "",
+            "icon": "£",
             "URL": "GBP",
             "id": "b8635b3a6ff641c7bd517053c6025aac"
           },
           {
             "title": "JPY - Japanese Yen",
-            "icon": "",
+            "icon": "¥",
             "URL": "JPY",
             "id": "008152c937794ac7a9a10a0fa447df70"
           },
           {
             "title": "MXN - Mexican Peso",
-            "icon": "",
+            "icon": "$",
             "URL": "MXN",
             "id": "8fdabfd1f5f647b3878d07fc4eb17bec"
           },
           {
             "title": "USD - US Dollar",
-            "icon": "",
+            "icon": "$",
             "URL": "USD",
             "id": "0515067f04b94fa4bcf4f782d63080da"
           },
           {
             "title": "PKR - Pakistan Rupee",
-            "icon": "",
+            "icon": "₹",
             "URL": "PKR",
             "id": "f444fdb4e23743f784e9b50b19f5fc71"
           },
           {
             "title": "NZD - New Zealand Dollar",
-            "icon": "",
+            "icon": "$",
             "URL": "NZD",
             "id": "26de5f748fd049928c9ad2df128999e8"
           },
           {
             "title": "PHP - Philippines Dollar",
-            "icon": "",
+            "icon": "₱",
             "URL": "PHP",
             "id": "3a5d77541e52409e88c221110cb63fac"
           },
           {
             "title": "SGD - Singapore Dollar",
-            "icon": "",
+            "icon": "$",
             "URL": "SGD",
             "id": "831839042b1a4964b7f9fa9150d1e522"
           }

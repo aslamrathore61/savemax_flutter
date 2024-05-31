@@ -72,7 +72,7 @@ class _DrawerMenuItemState extends State<DrawerMenuItem> {
             expandView = !expandView;
           });
         } else {
-          widget.onTap(widget.parenturl, widget.parentID);
+          widget.onTap(widget.parenturl, widget.parentID, "");
         }
       },
       child: Column(
@@ -142,13 +142,14 @@ class _DrawerMenuItemState extends State<DrawerMenuItem> {
                   children: widget.subList.map((subItem) {
 
                     return ChildDrawerMenuItem(
+                      parentID: widget.parentID!,
                       base64Icon: subItem.icon!,
                       title: subItem.title!,
                       id: subItem.id!,
                       selectedLangID: widget.selectedLanguageID,
                       onTap: () {
                         print('submenuclick ${subItem.uRL} "${subItem.id}');
-                        widget.onTap(subItem.uRL, subItem.id);
+                        widget.onTap(subItem.uRL, subItem.id, subItem.icon);
                       },
                     );
                   }).toList(),
@@ -164,6 +165,7 @@ class _DrawerMenuItemState extends State<DrawerMenuItem> {
 
 // child drawer menu item class
 class ChildDrawerMenuItem extends StatefulWidget {
+  final String parentID;
   final String base64Icon;
   final String title;
   final String id;
@@ -172,6 +174,7 @@ class ChildDrawerMenuItem extends StatefulWidget {
 
   const ChildDrawerMenuItem({
     Key? key,
+    required this.parentID,
     required this.base64Icon,
     required this.title,
     required this.id,
@@ -189,7 +192,7 @@ class _ChildDrawerMenuItemState extends State<ChildDrawerMenuItem> {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+      return InkWell(
       onTap: () => widget.onTap(),
       child: Padding(
         padding: const EdgeInsets.only(bottom: 8.0),
@@ -198,7 +201,7 @@ class _ChildDrawerMenuItemState extends State<ChildDrawerMenuItem> {
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                widget.base64Icon.isNotEmpty
+                widget.base64Icon.isNotEmpty && widget.parentID != Config.CURRENCY_ID
                     ? Image.memory(
                         base64Decode(widget.base64Icon),
                         width: 30,
