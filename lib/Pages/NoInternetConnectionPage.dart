@@ -105,7 +105,7 @@ class _NoInternetConnectionPageState extends State<NoInternetConnectionPage> {
                 ],
               )),
           Expanded(
-            flex: 3,
+            flex: 2,
             child: Container(
               margin: EdgeInsets.only(top: 90),
               alignment: Alignment.center,
@@ -117,71 +117,76 @@ class _NoInternetConnectionPageState extends State<NoInternetConnectionPage> {
           ),
           Expanded(
             flex: 2,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'OOPS!',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black87),
-                ),
-                Text(
-                  textAlign: TextAlign.center,
-                  'NO INTERNET!',
-                  style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black87),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  textAlign: TextAlign.center,
-                  'Please check your network connection',
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black87),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Center(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      fixedSize: Size(size.width - 80, 45),
-                      shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(8))),
-                    ),
-                    onPressed: () {
-
-                      setState(() {
-                        if (count == 3) {
-                          count = 1; // Reset count to 1 when it reaches 3
-                        } else {
-                          count++;
-                        }
-                      });
-
-                      widget.tryAgain();
-                    },
-                    child: const Text(
-                      'TRY AGAIN',
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 2.0,right: 2.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'OOPS!',
+                      textAlign: TextAlign.center,
                       style: TextStyle(
-                          fontSize: 17,
+                          fontSize: 19,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black87),
+                    ),
+                    Text(
+                      textAlign: TextAlign.center,
+                      'NO INTERNET!',
+                      style: TextStyle(
+                          fontSize: 19,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black87),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      textAlign: TextAlign.center,
+                      'Please check your network connection',
+                      style: TextStyle(
+                          fontSize: 16,
                           fontWeight: FontWeight.w400,
                           color: Colors.black87),
                     ),
-                  ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Center(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          fixedSize: Size(size.width - 80, 45),
+                          shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(8))),
+                        ),
+                        onPressed: () {
+
+                          setState(() {
+                            if (count == 3) {
+                              count = 1; // Reset count to 1 when it reaches 3
+                            } else {
+                              count++;
+                            }
+                          });
+
+                          widget.tryAgain();
+                        },
+                        child: const Text(
+                          'TRY AGAIN',
+                          style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.black87),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           )
         ],

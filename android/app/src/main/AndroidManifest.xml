@@ -1,97 +1,38 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <!-- Permission to read files from external storage (outside application container).
+         As of Android 12 this permission no longer has any effect. Instead use the
+         READ_MEDIA_IMAGES, READ_MEDIA_VIDEO or READM_MEDIA_AUDIO permissions. -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <!-- Permissions to read media files. -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
 
     <application
         android:label="Save Max"
         android:icon="@mipmap/ic_launcher_primary"
         android:name="${applicationName}"
         android:requestLegacyExternalStorage="true"
-        android:usesCleartextTraffic="true"
-        >
-
+        android:usesCleartextTraffic="true">
 
         <activity
             android:name=".savemax_flutter.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
-            android:theme="@style/LaunchTheme">
-          <!--  <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
-
-        </activity>
-
-
-        <activity-alias
-            android:name=".MainActivityA"
-            android:enabled="true"
-            android:exported="true"
-            android:icon="@mipmap/ic_launcher_secondary"
-            android:label="@string/PrimaryName"
-            android:roundIcon="@mipmap/ic_launcher_primary_round"
-            android:targetActivity=".savemax_flutter.MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity-alias>
-
-        <activity-alias
-            android:name=".MainActivityB"
-            android:enabled="false"
-            android:exported="true"
             android:icon="@mipmap/ic_launcher_secondary"
             android:label="@string/SecondaryName"
             android:roundIcon="@mipmap/ic_launcher_secondary_round"
-            android:targetActivity=".savemax_flutter.MainActivity">
+            android:theme="@style/LaunchTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity-alias>
-
-
-        <activity-alias
-            android:name=".StartActivity"
-            android:exported="true"
-            android:targetActivity=".savemax_flutter.MainActivity">
-
-            <meta-data
-                android:name="io.flutter.embedding.android.NormalTheme"
-                android:resource="@style/NormalTheme"
-                />
-
-            <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
-        </activity-alias>
-
-       <!-- <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:launchMode="singleTop"
-            android:theme="@style/LaunchTheme"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
-            android:hardwareAccelerated="true"
-            android:windowSoftInputMode="adjustResize">
-            &lt;!&ndash; Specifies an Android theme to apply to this Activity as soon as
-                 the Android process has started. This theme is visible to the user
-                 while the Flutter UI initializes. After that, this theme continues
-                 to determine the Window background behind the Flutter UI. &ndash;&gt;
-            <meta-data
-              android:name="io.flutter.embedding.android.NormalTheme"
-              android:resource="@style/NormalTheme"
-              />
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>-->
-
+        </activity>
 
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
@@ -99,8 +40,9 @@
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
+
     <!-- Required to query activities that can process text, see:
-         https://developer.android.com/training/package-visibility?hl=en and
+         https://developer.android.com/training/package-visibility and
          https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.
 
          In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->

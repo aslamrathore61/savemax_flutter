@@ -31,7 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  webview_flutter: ^4.7.0
+  webview_flutter: ^4.8.0
   flutter_svg: ^2.0.10+1
   hive: ^2.2.3
   hive_flutter: ^1.1.0
@@ -47,9 +47,11 @@ dependencies:
   share_plus: ^9.0.0
   device_info_plus: ^9.1.2
   image_picker: ^1.0.7
-  permission_handler: ^11.3.0
+  permission_handler: ^11.3.1
   image_cropper: ^5.0.1
-  
+  location: ^5.0.3
+  geolocator: ^11.0.0
+
 #  fluttertoast: ^8.2.5
 
   # The following adds the Cupertino Icons font to your application.
