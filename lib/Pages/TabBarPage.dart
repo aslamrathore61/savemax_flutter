@@ -34,7 +34,9 @@ import '../main.dart';
 import '../model/native_item.dart';
 import 'NoInternetConnectionPage.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:webview_flutter_android/webview_flutter_android.dart';
+// Import for iOS features.
+import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
 import 'package:permission_handler/permission_handler.dart';
 
@@ -55,7 +57,9 @@ class TabBarPage extends StatefulWidget {
 /// [TickerProviderStateMixin].
 class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
   late final TabController _tabController;
-  late WebViewController _webViewController = WebViewController();
+  late final WebViewController _webViewController;
+
+
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool isProfileMenuVisible = false;
   bool userDetailsAvaible = false;
@@ -168,8 +172,8 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
   void CommonLoadRequest(String url, WebViewController webViewController, BuildContext _context) {
 
     javaScriptCall(webViewController,_context);
-    _webViewController.loadHtmlString(html);
-    //_webViewController.loadRequest(Uri.parse(url));
+    // _webViewController.loadHtmlString(html);
+    _webViewController.loadRequest(Uri.parse(url));
 
 
   }
@@ -189,6 +193,21 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
 
 
     _connectivityStream = _connectivity.onConnectivityChanged;
+
+    // #docregion platform_features
+    late final PlatformWebViewControllerCreationParams params;
+    if (WebViewPlatform.instance is WebKitWebViewPlatform) {
+      params = WebKitWebViewControllerCreationParams(
+        allowsInlineMediaPlayback: true,
+        mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{},
+      );
+
+    } else {
+      params = const PlatformWebViewControllerCreationParams();
+    }
+
+    _webViewController = WebViewController.fromPlatformCreationParams(params);
+
 
 
 
@@ -215,6 +234,9 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
       }
 
       print('loadrequest 3');
+
+
+
       CommonLoadRequest(deepLinkingURL, _webViewController, context);
 
     }
@@ -623,6 +645,9 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
                               controller: _webViewController
                              // ..loadRequest(Uri.parse(deepLinkingURL))
                                 ..enableZoom(false)
+                                // ..setOnConsoleMessage((JavaScriptConsoleMessage message) {
+                                //   print("ddd [${message.level.name}] ${message.message}");
+                                // })
                                 ..setJavaScriptMode(JavaScriptMode.unrestricted)
                                 ..setBackgroundColor(const Color(0x00000000))
                                 ..setNavigationDelegate(
@@ -733,7 +758,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
 
   void javaScriptCall(
       WebViewController webViewController, BuildContext context) {
-
+    webViewController.removeJavaScriptChannel('FlutterChannel');
     webViewController.addJavaScriptChannel('FlutterChannel',
         onMessageReceived: (message) async {
           print('FlutterChannelDetails ${message.message}');
