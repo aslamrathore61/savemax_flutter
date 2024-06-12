@@ -27,7 +27,10 @@ class _NoInternetConnectionPageState extends State<NoInternetConnectionPage> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+   final _statusBarHeight = MediaQuery.of(context).padding.top;
+
     return Container(
+      padding:EdgeInsets.only(top: _statusBarHeight),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,

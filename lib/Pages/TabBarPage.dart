@@ -325,10 +325,12 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
   galaxy,
 }*/
   bool canPop = false;
+  late double _statusBarHeight;
 
   @override
   Widget build(BuildContext context) {
-    double statusBarHeight = MediaQuery.of(context).padding.top;
+    _statusBarHeight = MediaQuery.of(context).padding.top;
+    print('statusbarHeight $_statusBarHeight');
     return PopScope(
       canPop: canPop,
       onPopInvoked: (didPop) async {
@@ -337,7 +339,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
         }
       },
       child: Container(
-        margin: EdgeInsets.only(top: statusBarHeight),
+    //    margin: EdgeInsets.only(top: _statusBarHeight),
         child: Scaffold(
           key: _scaffoldKey,
           /* floatingActionButton: FloatingActionButton(
@@ -370,6 +372,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
           ),*/
           drawer: Container(
             width: MediaQuery.of(context).size.width - 74,
+            padding:EdgeInsets.only(top: _statusBarHeight),
             decoration: const BoxDecoration(
               borderRadius: BorderRadius.zero, // Remove the corner radius
               color: Colors.white, // Set your desired background color here
@@ -644,58 +647,61 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
                             delaySec == 0;
                             return Center(child: CircularProgressIndicator(color: Colors.blue.shade600,));
                           } else {
-                            return WebViewWidget(
-                              controller: _webViewController
-                             // ..loadRequest(Uri.parse(deepLinkingURL))
-                                ..enableZoom(false)
-                                // ..setOnConsoleMessage((JavaScriptConsoleMessage message) {
-                                //   print("ddd [${message.level.name}] ${message.message}");
-                                // })
-                                ..setJavaScriptMode(JavaScriptMode.unrestricted)
-                                ..setBackgroundColor(const Color(0x00000000))
-                                ..setNavigationDelegate(
-                                  NavigationDelegate(
-                                    onProgress: (int progress) {
-                                      print('progress $progress');
-                                    },
-                                    onPageStarted: (String url) {
-                                      setState(() {
-                                        if(url == Config.HOME_URL){
-                                          _tabController.index = 0;
-                                        }else if(url.contains('buy')) {
-                                          _tabController.index = 1;
-                                        }else if(url.contains('rent')) {
-                                          _tabController.index = 2;
-                                        }else if(url.contains('\$999')) {
-                                          _tabController.index = 3;
+                            return Container(
+                              margin: EdgeInsets.only(top: _statusBarHeight),
+                              child: WebViewWidget(
+                                controller: _webViewController
+                               // ..loadRequest(Uri.parse(deepLinkingURL))
+                                  ..enableZoom(false)
+                                  // ..setOnConsoleMessage((JavaScriptConsoleMessage message) {
+                                  //   print("ddd [${message.level.name}] ${message.message}");
+                                  // })
+                                  ..setJavaScriptMode(JavaScriptMode.unrestricted)
+                                  ..setBackgroundColor(const Color(0x00000000))
+                                  ..setNavigationDelegate(
+                                    NavigationDelegate(
+                                      onProgress: (int progress) {
+                                        print('progress $progress');
+                                      },
+                                      onPageStarted: (String url) {
+                                        setState(() {
+                                          if(url == Config.HOME_URL){
+                                            _tabController.index = 0;
+                                          }else if(url.contains('buy')) {
+                                            _tabController.index = 1;
+                                          }else if(url.contains('rent')) {
+                                            _tabController.index = 2;
+                                          }else if(url.contains('\$999')) {
+                                            _tabController.index = 3;
+                                          }
+
+                                        });
+                                        print('onPageStarted $url');
+                                      },
+                                      onPageFinished: (String url) {
+                                        print('onPageFinished $url');
+                                      },
+                                      onWebResourceError: (WebResourceError error) {
+                                        print('LoadPageError ${error.errorCode}');
+
+                                        print('onWebResourceError ${error.errorType} ${error.errorCode} ${error.description}');
+                                        if (error.errorCode == -2) {
+                                          LoadPageError = true;
+
+                                        } else if (error.errorCode == -8) {
+                                          LoadPageError = true;
                                         }
-
-                                      });
-                                      print('onPageStarted $url');
-                                    },
-                                    onPageFinished: (String url) {
-                                      print('onPageFinished $url');
-                                    },
-                                    onWebResourceError: (WebResourceError error) {
-                                      print('LoadPageError ${error.errorCode}');
-
-                                      print('onWebResourceError ${error.errorType} ${error.errorCode} ${error.description}');
-                                      if (error.errorCode == -2) {
-                                        LoadPageError = true;
-
-                                      } else if (error.errorCode == -8) {
-                                        LoadPageError = true;
-                                      }
-                                    },
-                                    onHttpError: (HttpResponseError error) {
-                                      print('httpResponseError $error');
-                                    },
-                                    onNavigationRequest: (NavigationRequest request) {
-                                      print('urlcheckvalue ${request.url}');
-                                      return NavigationDecision.navigate;
-                                    },
+                                      },
+                                      onHttpError: (HttpResponseError error) {
+                                        print('httpResponseError $error');
+                                      },
+                                      onNavigationRequest: (NavigationRequest request) {
+                                        print('urlcheckvalue ${request.url}');
+                                        return NavigationDecision.navigate;
+                                      },
+                                    ),
                                   ),
-                                ),
+                              ),
                             );
                           }
                         },

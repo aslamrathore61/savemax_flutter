@@ -63,7 +63,7 @@ Future<dynamic> ShowCapturedWidget(
 
 void launchAppStore(BuildContext context) async {
   final Uri androidUrl = Uri.parse('https://play.google.com/store/apps/details?id=com.app.savemax');
-  final Uri iosUrl = Uri.parse('https://apps.apple.com/us/app/yourapp/id1234567890');
+  final Uri iosUrl = Uri.parse('https://apps.apple.com/us/app/save-max/id1605647163');
 
   if (Theme.of(context).platform == TargetPlatform.android) {
     if (await canLaunchUrl(androidUrl)) {
