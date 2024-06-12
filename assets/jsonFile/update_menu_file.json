@@ -1,4 +1,7 @@
 {
+  "isMaintenance": false,
+  "AndroidVersion": 1,
+  "IOSVersion": 1,
   "BottomMenu": {
     "Bottom": [
       {

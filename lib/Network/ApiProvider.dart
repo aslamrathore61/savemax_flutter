@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:savemax_flutter/Config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -54,7 +55,17 @@ class ApiProvider {
     String jsonString = await rootBundle.loadString('assets/jsonFile/update_menu_file.json');
     Map<String, dynamic> jsonResponse = json.decode(jsonString);
 
-    print('jsonResponse ${jsonResponse}');
+    if(kDebugMode) {
+      print('jsonResponse ${jsonResponse}');
+    }
+
+
+    // ios & android force update and check maintenance
+    final bool isMaintenance =  jsonResponse['isMaintenance'] as bool;
+    final String platformVersionKey = Platform.isAndroid ? Config.ANDROID_VERSION : Config.IOS_VERSION;
+    final int appserverVersion = Platform.isAndroid ? jsonResponse['AndroidVersion'] as int : jsonResponse['IOSVersion'] as int;
+    await setPrefIntegerValue(platformVersionKey, appserverVersion);
+    await setPrefBoolValue(Config.isMaintenance, isMaintenance);
 
     var BottomMenu = jsonResponse['BottomMenu']['Bottom'] as List?;
     var SideMenu = jsonResponse['SideMenu']['Side'] as List?;

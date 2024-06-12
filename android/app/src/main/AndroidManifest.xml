@@ -15,6 +15,7 @@
 
     <application
         android:label="Save Max"
+        android:enableOnBackInvokedCallback="true"
         android:icon="@mipmap/ic_launcher_primary"
         android:name="${applicationName}"
         android:requestLegacyExternalStorage="true"
@@ -39,6 +40,11 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
     </application>
 
     <!-- Required to query activities that can process text, see:

@@ -51,5 +51,9 @@ class Config {
   static const String REQUEST_APP_VERSION = "requestAppVersion";
   static const String LANUAGE_ID = "language_ID";
   static const String LANUAGE_URL = "language_url";
+ static const String ANDROID_VERSION = "android_version";
+ static const String IOS_VERSION = "ios_version";
+ static const String isMaintenance = "isMaintenance";
+
 
 }

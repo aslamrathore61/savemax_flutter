@@ -1,11 +1,14 @@
 import 'dart:async';
 import 'dart:ffi';
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:hive/hive.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:savemax_flutter/Config.dart';
+import 'package:savemax_flutter/SharePrefFile.dart';
 import 'package:savemax_flutter/model/user_info.dart';
 import '../bloc/native_item_bloc.dart';
 import '../bloc/native_item_event.dart';
@@ -13,6 +16,7 @@ import '../bloc/native_item_state.dart';
 import '../model/native_item.dart';
 
 class SplashScreen extends StatelessWidget {
+  
   @override
   Widget build(BuildContext context) {
     final NativeItemBloc nativeItemBloc = NativeItemBloc();
@@ -71,14 +75,35 @@ void getSavedDataFromDatabase(BuildContext savedContext) async {
     var box = await Hive.openBox<NativeItem>(Config.NATIVE_ITEM_BOX); // Open the box
     NativeItem? nativeItem = box.get(Config.NATIVE_ITEM_KEY); // Get the NativeItem object from the box
 
+    print('nativeBottomItem ${nativeItem?.bottom?.isEmpty}');
     if (nativeItem != null) {
-      FlutterNativeSplash.remove();
-      Navigator.of(savedContext).pushReplacementNamed('/home',
-        arguments: {
-          'userInfo': userInfoItem,
-          'nativeItem': nativeItem,
-        },
-      );
+
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
+      String currentVersion = packageInfo.buildNumber;
+      print('currentVersion ${currentVersion}');
+
+      final String platformVersionKey = Platform.isAndroid ? Config.ANDROID_VERSION : Config.IOS_VERSION;
+      final int platformVersion = await getPrefIntegerValue(platformVersionKey);
+      final bool isMaintenance = await getPrefBoolValue(Config.isMaintenance);
+
+      if (platformVersion > int.parse(currentVersion)) {
+        FlutterNativeSplash.remove();
+        Navigator.of(savedContext).pushReplacementNamed('/forceUpdatePage');
+      }else if(isMaintenance){
+        FlutterNativeSplash.remove();
+        Navigator.of(savedContext).pushReplacementNamed('/maintenancePage');
+      } else {
+        FlutterNativeSplash.remove();
+        Navigator.of(savedContext).pushReplacementNamed(
+          '/home',
+          arguments: {
+            'userInfo': userInfoItem,
+            'nativeItem': nativeItem,
+          },
+        );
+      }
+
     } else {
       showDialog(
           context: savedContext,
@@ -100,5 +125,10 @@ void getSavedDataFromDatabase(BuildContext savedContext) async {
   } catch (e) {
     print('Error retrieving data: $e');
     return null;
+  }
+
+  Future<String> getCurrentVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    return packageInfo.version;
   }
 }

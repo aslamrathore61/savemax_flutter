@@ -97,6 +97,12 @@ Future<void> main() async {
         final NativeItem nativeItem = args['nativeItem'];
         return TabBarPage(nativeItem: nativeItem, userInfo: userInfo,);
       },
+      '/forceUpdatePage': (context) {
+        return ForceUpdateScreen();
+      },
+      '/maintenancePage': (context) {
+        return MaintenanceScreen();
+      },
     },
 
   ));

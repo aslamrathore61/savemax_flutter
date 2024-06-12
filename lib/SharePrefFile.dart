@@ -20,3 +20,13 @@ Future<String> getPrefStringValue(String key, {String defaultValue = ''}) async 
   final prefs = await SharedPreferences.getInstance();
   return prefs.getString(key) ?? defaultValue;
 }
+
+Future<void> setPrefBoolValue(String key,bool valu) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setBool(key, valu);
+}
+
+Future<bool> getPrefBoolValue(String key, {bool defaultValue = false}) async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getBool(key) ?? defaultValue;
+}

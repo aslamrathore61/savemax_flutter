@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
 import 'package:location/location.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:savemax_flutter/SharePrefFile.dart';
@@ -39,7 +41,8 @@ import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
 import 'package:permission_handler/permission_handler.dart';
-
+import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 
 /// Flutter code sample for [TabBar].
 
@@ -173,7 +176,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
 
     javaScriptCall(webViewController,_context);
     // _webViewController.loadHtmlString(html);
-    _webViewController.loadRequest(Uri.parse(url));
+   _webViewController.loadRequest(Uri.parse(url));
 
 
   }
@@ -958,6 +961,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
               }
             },
           ),
+
           CupertinoActionSheetAction(
             child: Text('Camera'),
             onPressed: () async {
@@ -1000,15 +1004,44 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
   cropImageCall(File imgFile) async {
     String? croppedImagePath = await cropImage(imgFile);
     print("croppedImagePath $croppedImagePath");
-    // Read the file at the specified path
     File file = File('$croppedImagePath');
 
-
-  /*  List<int> fileBytes = await file.readAsBytes();
+      List<int> fileBytes = await file.readAsBytes();
     String base64String = base64Encode(fileBytes);
-    _webViewController.runJavaScript('getFileBytesData(`${'data:image/png;base64,$base64String'}`)');*/
+    _webViewController.runJavaScript('getFileBytesData(`${'data:image/png;base64,$base64String'}`)');
 
+
+    // Read the file at the specified path
+   // uploadImage(file);
   }
+
+  Future<void> uploadImage(File imageFile) async {
+    final dio = Dio();
+    const url = 'https://api.savemax.com/imageservice/uploadMultipleFiles';
+
+    // Generate the current date and time in the desired format
+    String formattedDate = DateFormat('yyyy-MM-dd HHmmss').format(DateTime.now());
+    String name = 'properties_$formattedDate.png';
+
+    FormData formData = FormData.fromMap({
+      'files': await MultipartFile.fromFile(imageFile.path, filename: name),
+    });
+
+    try {
+      final response = await dio.post(url, data: formData);
+      if (response.statusCode == 200) {
+        print('Image uploaded successfully! ${response}');
+        _webViewController.runJavaScript('getFileBytesData(`${'data:image/png;base64,$response'}`)');
+
+      } else {
+        print('Image upload failed: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+    }
+  }
+
+
 
   void showPermissionSettingsDialog(BuildContext context, String msg) {
     showDialog(
@@ -1219,8 +1252,8 @@ console.log('flutterLocationLng:', longitude);
        if(window.FlutterChannel) {
                console.log('GetLocation')
 
-          window.FlutterChannel.postMessage('GetLocation');
-     //   window.FlutterChannel.postMessage('ProvideProfileImageFormData');
+          // window.FlutterChannel.postMessage('GetLocation');
+       window.FlutterChannel.postMessage('ProvideProfileImageFormData');
 } else {
         // No Android or iOS, Flutter interface found
         console.log('No native APIs found.')
