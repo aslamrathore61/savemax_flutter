@@ -51,7 +51,7 @@ class ApiProvider {
 
   /***  Native Item Get From Asset ***/
 
-  Future<NativeItem> fetchMenuDetails() async {
+/*  Future<NativeItem> fetchMenuDetails() async {
     String jsonString = await rootBundle.loadString('assets/jsonFile/update_menu_file.json');
     Map<String, dynamic> jsonResponse = json.decode(jsonString);
 
@@ -80,7 +80,7 @@ class ApiProvider {
 
       return NativeItem(bottom: bottomItems, side: sideItems,profile: profileItems);
     }
-  }
+  }*/
 
 
   // this is for ssl trust issue shold not go in production
@@ -93,12 +93,8 @@ class ApiProvider {
     };
   }
 
-
-
-
   /***  Native Item Get From API ***/
 
-/*
   Future<NativeItem> fetchMenuDetails() async {
     configureDio();
 
@@ -111,8 +107,17 @@ class ApiProvider {
       );
 
      // Save the responseAppVersion regardless of other conditions
-     if (response.data != null && response.data['responseAppVersion'] != null) {
-       var responseAppVersion = response.data['responseAppVersion'];
+
+     // ios & android force update and check maintenance
+     final bool isMaintenance =  response.data['isMaintenance'] as bool;
+     final String platformVersionKey = Platform.isAndroid ? Config.ANDROID_VERSION : Config.IOS_VERSION;
+     final int appserverVersion = Platform.isAndroid ? response.data['androidVersion'] as int : response.data['iosversion'] as int;
+     await setPrefIntegerValue(platformVersionKey, appserverVersion);
+     await setPrefBoolValue(Config.isMaintenance, isMaintenance);
+
+
+     if (response.data != null && response.data['responseAppMenu'] != null) {
+       var responseAppVersion = response.data['responseAppMenu'];
        await setPrefIntegerValue(Config.REQUEST_APP_VERSION, responseAppVersion);
        print('SavedRequestAppVersion: $responseAppVersion');
      }
@@ -122,34 +127,35 @@ class ApiProvider {
       if (jsonResponse is String && jsonResponse.isEmpty) {
         // Handle empty jsonResponse
         print('Empty jsonResponse');
-        return NativeItem(bottom: [], side: []);
+        return NativeItem(bottom: [], side: [], profile: []);
       } else if (jsonResponse is Map && jsonResponse.containsKey('BottomMenu')) {
         // Handle jsonResponse with BottomMenu
         var bottomMenu = jsonResponse['BottomMenu']['Bottom'] as List?;
         var sideMenu = jsonResponse['SideMenu']['Side'] as List?;
+        var profileMenu = jsonResponse['ProfileMenu']['Profile'] as List?;
 
         var requestAppVersion = response.data['responseAppVersion'];
         print('requestAppVersion22222 ${requestAppVersion}');
         print('BottomMenuBottomMenu ${bottomMenu}');
 
         if (bottomMenu == null && sideMenu == null) {
-          return NativeItem(bottom: [], side: []);
+          return NativeItem(bottom: [], side: [], profile: []);
         } else {
           var bottomItems = bottomMenu!.map((e) => Bottom.fromJson(e)).toList();
           var sideItems = sideMenu!.map((e) => Side.fromJson(e)).toList();
+          var profileItems = profileMenu!.map((e) => Profile.fromJson(e)).toList();
 
-          return NativeItem(bottom: bottomItems, side: sideItems);
+          return NativeItem(bottom: bottomItems, side: sideItems, profile: profileItems);
         }
       } else {
         // Handle unexpected jsonResponse format
         print('Unexpected jsonResponse format');
-        return NativeItem(bottom: [], side: []);
+        return NativeItem(bottom: [], side: [], profile: []);
       }
     } catch (e) {
       print('ExceptionError $e');
-      return NativeItem(bottom: [], side: []);
+      return NativeItem(bottom: [], side: [], profile: []);
     }
   }
-*/
 
 }

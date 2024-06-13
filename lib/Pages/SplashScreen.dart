@@ -26,7 +26,7 @@ class SplashScreen extends StatelessWidget {
     nativeItemBloc.add(GetMenuDetailsEvents());
 
     nativeItemBloc.stream.listen((state) async {
-      if (state is NativeItemLoaded && state.nativeItem.bottom != null) {
+      if (state is NativeItemLoaded && state.nativeItem.bottom!.isNotEmpty) {
 
         saveDataToDatabase(state.nativeItem);
         Timer(const Duration(seconds: 3), () {
@@ -35,7 +35,9 @@ class SplashScreen extends StatelessWidget {
 
       } else if (state is NativeItemError) {
         getSavedDataFromDatabase(savedContext);
-        print(state.message);
+      }else {
+        getSavedDataFromDatabase(savedContext);
+
       }
     });
 
@@ -66,7 +68,9 @@ void getSavedDataFromDatabase(BuildContext savedContext) async {
     var userBox = await Hive.openBox<UserInfo>(Config.USER_INFO_BOX);
     // Get the UserInfo object from the box
     userInfoItem = userBox.get(Config.USER_INFO_KEY);
-  }catch(e){}
+  }catch(e){
+    print('exceptionofget ${e.toString()}');
+  }
 
 
   try {

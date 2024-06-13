@@ -36,8 +36,6 @@ import '../main.dart';
 import '../model/native_item.dart';
 import 'NoInternetConnectionPage.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:webview_flutter_android/webview_flutter_android.dart';
-// Import for iOS features.
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
 import 'package:permission_handler/permission_handler.dart';
@@ -372,7 +370,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
           ),*/
           drawer: Container(
             width: MediaQuery.of(context).size.width - 74,
-            padding:EdgeInsets.only(top: _statusBarHeight),
+            margin: EdgeInsets.only(top: _statusBarHeight),
             decoration: const BoxDecoration(
               borderRadius: BorderRadius.zero, // Remove the corner radius
               color: Colors.white, // Set your desired background color here
