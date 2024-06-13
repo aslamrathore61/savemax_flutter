@@ -3,8 +3,8 @@ class Config {
 
   // static const String HOST = "syncmob.savemax.com";
  // static const String HOME_URL = "https://savemax.com";
- static const String HOME_URL = "https://uat1.savemax.com/";
- //  static const String HOME_URL = "http://192.168.1.18:3000/";
+ // static const String HOME_URL = "https://uat1.savemax.com/";
+  static const String HOME_URL = "http://192.168.1.18:3000";
 
 
   //profile menu id

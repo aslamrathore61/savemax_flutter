@@ -33,6 +33,7 @@ import '../Config.dart';
 import '../Utils.dart';
 import '../Utils/constants.dart';
 import '../main.dart';
+import '../model/ImageUploadResponse.dart';
 import '../model/native_item.dart';
 import 'NoInternetConnectionPage.dart';
 import 'package:image_picker/image_picker.dart';
@@ -1010,13 +1011,8 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
     print("croppedImagePath $croppedImagePath");
     File file = File('$croppedImagePath');
 
-      List<int> fileBytes = await file.readAsBytes();
-    String base64String = base64Encode(fileBytes);
-    _webViewController.runJavaScript('getFileBytesData(`${'data:image/png;base64,$base64String'}`)');
-
-
     // Read the file at the specified path
-   // uploadImage(file);
+   uploadImage(file);
   }
 
   Future<void> uploadImage(File imageFile) async {
@@ -1033,9 +1029,10 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
 
     try {
       final response = await dio.post(url, data: formData);
+      final responseData = jsonEncode(response.data);
+
       if (response.statusCode == 200) {
-        print('Image uploaded successfully! ${response}');
-        _webViewController.runJavaScript('getFileBytesData(`${'data:image/png;base64,$response'}`)');
+       _webViewController.runJavaScript('getFileBytesData(`$responseData`)');
 
       } else {
         print('Image upload failed: ${response.statusCode}');
@@ -1223,34 +1220,21 @@ String html = """
 
 
 
-    window.getLatLong = (latlng) => {
-const { latitude, longitude } = JSON.parse(latlng);
-console.log('flutterLocationLat:', latitude);
-console.log('flutterLocationLng:', longitude);
-};
+//     window.getLatLong = (latlng) => {
+// const { latitude, longitude } = JSON.parse(latlng);
+// console.log('flutterLocationLat:', latitude);
+// console.log('flutterLocationLng:', longitude);
+// };
 
 
-  // window.getFileBytesData = async base64String => {
-  //   console.log('base64', base64String);
-  //   try {
-  //     const mimeType = base64String.match(/data:(.*);base64/)[1];
-  //     const byteString = atob(base64String.split(',')[1]);
-  //     const ab = new ArrayBuffer(byteString.length);
-  //     const ia = new Uint8Array(ab);
-  //     for (let i = 0; i < byteString.length; i++) {
-  //       ia[i] = byteString.charCodeAt(i);
-  //     }
-  //     const blob = new Blob([ab], { type: mimeType });
-  //     const formData = new FormData();
-  //     formData.append('file', blob, 'fileName');
-  //
-  //       console.log('formdataEntry', formData);
-  //
-  //    await uploadProfileImage(formData);
-  //   } catch (error) {
-  //     console.error('Error in loop:', error);
-  //   }
-  // };
+  window.getFileBytesData = (response) => {
+
+    try {
+      console.log('pardedData',JSON.stringify(response));
+    } catch (error) {
+      console.error('Error parsing JSON', error);
+    }
+  };
 
         function sendToFlutter() {
        if(window.FlutterChannel) {

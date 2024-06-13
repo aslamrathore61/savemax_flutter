@@ -26,7 +26,7 @@ class SplashScreen extends StatelessWidget {
     nativeItemBloc.add(GetMenuDetailsEvents());
 
     nativeItemBloc.stream.listen((state) async {
-      if (state is NativeItemLoaded && state.nativeItem.bottom!.isNotEmpty) {
+      if (state is NativeItemLoaded &&  state.nativeItem.bottom!.isNotEmpty) {
 
         saveDataToDatabase(state.nativeItem);
         Timer(const Duration(seconds: 3), () {
@@ -37,7 +37,6 @@ class SplashScreen extends StatelessWidget {
         getSavedDataFromDatabase(savedContext);
       }else {
         getSavedDataFromDatabase(savedContext);
-
       }
     });
 
