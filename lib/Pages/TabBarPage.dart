@@ -691,11 +691,15 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
                                             print('LoadPageError ${error.errorCode}');
 
                                             print('onWebResourceError ${error.errorType} ${error.errorCode} ${error.description}');
+
                                             if (error.errorCode == -2) {
                                               LoadPageError = true;
-
                                             } else if (error.errorCode == -8) {
                                               LoadPageError = true;
+                                            }else if(error.errorCode == -1001) {
+                                              _webViewController.reload();
+                                            }else if(error.errorCode == -999) {
+                                              _webViewController.reload();
                                             }
                                           },
                                           onHttpError: (HttpResponseError error) {
@@ -910,43 +914,41 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
     }
 
     LocationPermission permission = await Geolocator.checkPermission();
+    print('permissionStatus ${permission}');
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       print('check 4');
+    }else if(permission == LocationPermission.deniedForever) {
+      print('check 5');
 
-      if(permission == LocationPermission.deniedForever) {
-        print('check 5');
-
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text('Location Permission Required'),
-            content: Text('Please enable location permissions in your device settings to use this feature.'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () {
-                  // Open the app settings
-                  Navigator.pop(context);
-                  openAppSettings();
-                },
-                child: Text('Settings'),
-              ),
-            ],
-          ),
-        );
-        return;
-      } else if (permission != LocationPermission.whileInUse &&
-          permission != LocationPermission.always) {
-        print('check 6');
-        return;
-      }
-
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Location Permission Required'),
+          content: Text('Please enable location permissions in your device settings to use this feature.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Open the app settings
+                Navigator.pop(context);
+                openAppSettings();
+              },
+              child: Text('Settings'),
+            ),
+          ],
+        ),
+      );
+      return;
+    } else if (permission != LocationPermission.whileInUse &&
+        permission != LocationPermission.always) {
+      print('check 6');
+      return;
     }
     Position? position = await Geolocator.getLastKnownPosition();
     print('CurrentLatLong - Latitude: ${position?.latitude}, Longitude: ${position?.longitude}');

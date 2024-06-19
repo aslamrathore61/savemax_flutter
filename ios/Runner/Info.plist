@@ -98,6 +98,10 @@
     </dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Your message explaining why the app needs location access</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>Your message explaining why the app needs location access</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
