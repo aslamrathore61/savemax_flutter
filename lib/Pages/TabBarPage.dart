@@ -33,7 +33,6 @@ import '../Config.dart';
 import '../Utils.dart';
 import '../Utils/constants.dart';
 import '../main.dart';
-import '../model/ImageUploadResponse.dart';
 import '../model/native_item.dart';
 import 'NoInternetConnectionPage.dart';
 import 'package:image_picker/image_picker.dart';
@@ -77,6 +76,8 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
 
 
   ProfileResponse? profileResponse;
+  bool profileUpdated = false;
+  bool isLoading = false;
 
   final Connectivity _connectivity = Connectivity();
   late Stream<ConnectivityResult> _connectivityStream;
@@ -193,6 +194,10 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
       _userInfo = widget.userInfo;
     }
 
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.grey, // Change this to the desired color
+    ));
+
 
     _connectivityStream = _connectivity.onConnectivityChanged;
 
@@ -264,6 +269,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
      _tabController.index = _tabController.previousIndex;
     } else {
       if (url.isEmpty) return;
+
 
       // Load the URL for the selected tab
       if (url.startsWith(Config.HOME_URL) ||
@@ -337,429 +343,466 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
           _exitApp(context);
         }
       },
-      child: Container(
-    //    margin: EdgeInsets.only(top: _statusBarHeight),
-        child: Scaffold(
-          key: _scaffoldKey,
-          /* floatingActionButton: FloatingActionButton(
-            onPressed: () async {
+      child: Stack(
+        children: [
+          Container(
+            //    margin: EdgeInsets.only(top: _statusBarHeight),
+            child: Scaffold(
+              key: _scaffoldKey,
+              /* floatingActionButton: FloatingActionButton(
+              onPressed: () async {
 
-              print('logoutGotClick');
+                print('logoutGotClick');
 
-              //   String setVlaue = "Logout";
-              // _webViewController.runJavaScript('getLogout("$setVlaue")');
+                //   String setVlaue = "Logout";
+                // _webViewController.runJavaScript('getLogout("$setVlaue")');
 
-              String logout = "logout";
-              _webViewController.runJavaScript('getLogout("$logout")');
+                String logout = "logout";
+                _webViewController.runJavaScript('getLogout("$logout")');
 
-            }
-             */ /* try {
-                // Check if the device supports alternate icons
-                if (await FlutterDynamicIcon.supportsAlternateIcons) {
-                  // Change the icon
-                  await FlutterDynamicIcon.setAlternateIconName('gradient');
-                }else {
-                  print('notSupportAlternativeIcon');
-                }
-              } on PlatformException catch (_) {
-                print('Failed to change app icon');
               }
+               */ /* try {
+                  // Check if the device supports alternate icons
+                  if (await FlutterDynamicIcon.supportsAlternateIcons) {
+                    // Change the icon
+                    await FlutterDynamicIcon.setAlternateIconName('gradient');
+                  }else {
+                    print('notSupportAlternativeIcon');
+                  }
+                } on PlatformException catch (_) {
+                  print('Failed to change app icon');
+                }
 
-              CallAppIconChangerMethod(
-                  ".MainActivityB");
-            },*/ /*
-          ),*/
-          drawer: Container(
-            width: MediaQuery.of(context).size.width - 74,
-            margin: EdgeInsets.only(top: _statusBarHeight),
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.zero, // Remove the corner radius
-              color: Colors.white, // Set your desired background color here
-            ),
-            child: Drawer(
-              child: Container(
-                color: Colors.white,
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      //isUserLogout
-                      Visibility(
-                        visible: !userDetailsAvaible,
-                        child: Container(
-                          color: Colors.grey.shade50,
-                          padding: EdgeInsets.only(
-                              right: 10, left: 10, top: 4, bottom: 4),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                flex: 3,
-                                child: SocalButton(
-                                  color: Colors.blue.shade800,
-                                  icon: Icon(Icons.input,
-                                      color: Colors.white, size: 16),
-                                  press: () {
-                                    _scaffoldKey.currentState?.closeDrawer();
-                                    _onTabTapped(0, "${Config.HOME_URL}/login",'');
-                                    _tabController.index = 4;
-
-                                  },
-                                  text: "Sign-in".toUpperCase(),
-                                ),
-                              ),
-                              const Expanded(
-                                flex: 3,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    //    Icon(Icons.close),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      Visibility(
-                        visible: userDetailsAvaible,
-                        child: Container(
-                          color: Colors.grey.shade50,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    isProfileMenuVisible =
-                                    !isProfileMenuVisible;
-                                  });
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 12, left: 12, bottom: 4),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      CircleAvatarWithDefaultImage(
-                                        imageUrl: '${profileResponse?.imageUrl ?? ''}',
-                                        defaultImageUrl: 'assets/images/profileimage.png',
-                                        radius: 20.0,
-                                      ),
-                                      SizedBox(width: 10),
-                                      _userInfo != null
-                                          ? Text(
-                                        _userInfo!.name!
-                                            .split(' ')
-                                            .map((String word) {
-                                          return word
-                                              .substring(0, 1)
-                                              .toUpperCase() +
-                                              word.substring(1);
-                                        }).join(' '),
-                                        style: TextStyle(fontSize: 14),
-                                      )
-                                          : Text('-'),
-                                      SizedBox(width: 20),
-                                      Icon(
-                                        isProfileMenuVisible
-                                            ? Icons.keyboard_arrow_up
-                                            : Icons.keyboard_arrow_down,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-
-                              Visibility(
-                                visible: isProfileMenuVisible,
-                                child: ListView.builder(
-                                  shrinkWrap: true,
-                                  padding: const EdgeInsets.only(left: 8),
-                                  itemCount: widget.nativeItem.profile?.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return ProfileMenuItem(
-                                      profileResponse: profileResponse,
-                                      userType: _userInfo != null ? _userInfo!.userType! : '',
-                                      parenturl: widget.nativeItem.profile![index].uRL!,
-                                      parentID:
-                                      widget.nativeItem.profile![index].id!,
-                                      title: widget
-                                          .nativeItem.profile![index].title!,
-                                      onTap: (String url, String id) async {
-
-
-                                        // use this id for logout clear local cookie
-                                        if (id == Config.LOGOUT_ID) {
-                                          await _webViewController.clearCache();
-                                          final cookieManager =
-                                          WebViewCookieManager();
-                                          cookieManager.clearCookies();
-                                          await _webViewController
-                                              .clearLocalStorage();
-
-                                          // clear user info
-                                          var box =
-                                          await Hive.openBox<UserInfo>(
-                                              Config.USER_INFO_BOX);
-                                          await box
-                                              .delete(Config.USER_INFO_KEY);
-
-                                          setState(() {
-                                            _userInfo == null;
-                                            userDetailsAvaible = false;
-                                          });
-                                        }
-
-                                        _onTabTapped(0, url,id);
+                CallAppIconChangerMethod(
+                    ".MainActivityB");
+              },*/ /*
+            ),*/
+              drawer: Container(
+                width: MediaQuery.of(context).size.width - 74,
+                margin: EdgeInsets.only(top: _statusBarHeight),
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.zero, // Remove the corner radius
+                  color: Colors.white, // Set your desired background color here
+                ),
+                child: Drawer(
+                  child: Container(
+                    color: Colors.white,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          //isUserLogout
+                          Visibility(
+                            visible: !userDetailsAvaible,
+                            child: Container(
+                              color: Colors.grey.shade50,
+                              padding: EdgeInsets.only(
+                                  right: 10, left: 10, top: 4, bottom: 4),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 3,
+                                    child: SocalButton(
+                                      color: Colors.blue.shade800,
+                                      icon: Icon(Icons.input,
+                                          color: Colors.white, size: 16),
+                                      press: () {
                                         _scaffoldKey.currentState?.closeDrawer();
+                                        _onTabTapped(0, "${Config.HOME_URL}/login",'');
                                         _tabController.index = 4;
 
                                       },
-                                    );
-                                  },
-                                ),
+                                      text: "Sign-in".toUpperCase(),
+                                    ),
+                                  ),
+                                  const Expanded(
+                                    flex: 3,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        //    Icon(Icons.close),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
-                        ),
-                      ),
-                      Container(
-                        color: Colors.white,
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          padding: const EdgeInsets.all(8),
-                          itemCount: widget.nativeItem.side?.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return DrawerMenuItem(
-                              selectedLanguageID: mSelectedLanguageID,
-                              selectedLanguageURL: mSelectedLanguageURL,
-                              parenturl: widget.nativeItem.side![index].uRL!,
-                              parentID: widget.nativeItem.side![index].id!,
-                              base64Icon: widget.nativeItem.side![index].icon!,
-                              base64IconMenu:
-                              widget.nativeItem.side![index].menuIcon!,
-                              subList: widget.nativeItem.side![index].subList!,
-                              title: widget.nativeItem.side![index].title!,
-                              onTap: (String url, String id, String icon) async {
+
+                          Visibility(
+                            visible: userDetailsAvaible,
+                            child: Container(
+                              color: Colors.grey.shade50,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        isProfileMenuVisible =
+                                        !isProfileMenuVisible;
+                                      });
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 12, left: 12, bottom: 4),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          CircleAvatarWithDefaultImage(
+                                            imageUrl: '${profileResponse?.imageUrl ?? ''}',
+                                            defaultImageUrl: 'assets/images/profileimage.png',
+                                            radius: 20.0,
+                                          ),
+                                          SizedBox(width: 10),
+                                          _userInfo != null
+                                              ? Text(
+                                            _userInfo!.name!
+                                                .split(' ')
+                                                .map((String word) {
+                                              return word
+                                                  .substring(0, 1)
+                                                  .toUpperCase() +
+                                                  word.substring(1);
+                                            }).join(' '),
+                                            style: TextStyle(fontSize: 14),
+                                          )
+                                              : Text('-'),
+                                          SizedBox(width: 20),
+                                          Icon(
+                                            isProfileMenuVisible
+                                                ? Icons.keyboard_arrow_up
+                                                : Icons.keyboard_arrow_down,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+
+                                  Visibility(
+                                    visible: isProfileMenuVisible,
+                                    child: ListView.builder(
+                                      shrinkWrap: true,
+                                      padding: const EdgeInsets.only(left: 8),
+                                      itemCount: widget.nativeItem.profile?.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return ProfileMenuItem(
+                                          profileResponse: profileResponse,
+                                          userType: _userInfo != null ? _userInfo!.userType! : '',
+                                          parenturl: widget.nativeItem.profile![index].uRL!,
+                                          parentID:
+                                          widget.nativeItem.profile![index].id!,
+                                          title: widget
+                                              .nativeItem.profile![index].title!,
+                                          onTap: (String url, String id) async {
 
 
-                                print('parentURL ${url} ParentID ${id}');
+                                            // use this id for logout clear local cookie
+                                            if (id == Config.LOGOUT_ID) {
+                                              await _webViewController.clearCache();
+                                              final cookieManager =
+                                              WebViewCookieManager();
+                                              cookieManager.clearCookies();
+                                              await _webViewController
+                                                  .clearLocalStorage();
 
-                                int _index = 0;
-                                int foundIndex = -1;
-                                widget.nativeItem.bottom?.forEach((element) {
-                                  if (element.id == id) {
-                                    foundIndex = _index;
-                                    return;
-                                  }
-                                  _index++;
-                                });
+                                              // clear user info
+                                              var box =
+                                              await Hive.openBox<UserInfo>(
+                                                  Config.USER_INFO_BOX);
+                                              await box
+                                                  .delete(Config.USER_INFO_KEY);
 
+                                              setState(() {
+                                                _userInfo == null;
+                                                userDetailsAvaible = false;
+                                              });
+                                            }
 
-                                if (widget.nativeItem.side![index].id! == Config.CURRENCY_ID) {
-                                  print('LanguageIDdd ${widget.nativeItem.side![index].id!}');
-                                  print('LanguageID ${url}');
-                                  mSelectedLanguageID = id;
-                                  mSelectedLanguageURL = url;
+                                            _onTabTapped(0, url,id);
+                                            _scaffoldKey.currentState?.closeDrawer();
+                                            _tabController.index = 4;
 
-                                  String jsCode = '{"currency": "${url}", "symbol": "${icon}"}';
-                                  _webViewController.runJavaScript('changeCurrency(`$jsCode`)');
-                                  await setPrefStringValue(Config.LANUAGE_ID, id);
-                                  await setPrefStringValue(Config.LANUAGE_URL, url);
-                                  // handle
-                                } else if (foundIndex != -1) {
-                                  print('parentURL  1111');
-
-                                  _tabController.index = foundIndex;
-                                  _onTabTapped(foundIndex, url, id);
-                                } else {
-                                  print('parentURL  2222');
-
-                                  _onTabTapped(0, url,id);
-                                  _tabController.index = 4;
-
-                                }
-
-                                _scaffoldKey.currentState?.closeDrawer();
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          body: Column(
-            children: [
-              Expanded(
-                child: _initialConnectivity == null
-                    ? Center(
-                  child: CircularProgressIndicator(),
-                ) // Show loading indicator while checking initial connectivity
-                    : StreamBuilder<ConnectivityResult>(
-                  stream: _connectivityStream,
-                  builder: (BuildContext context, AsyncSnapshot<ConnectivityResult> snapshot) {
-                    // Check initial connectivity if stream has not emitted any data yet
-                    final connectivityResult = snapshot.data ?? _initialConnectivity;
-
-                    print('connectivityResult11 $connectivityResult');
-
-                    if (snapshot.connectionState == ConnectionState.waiting && connectivityResult == null) {
-                      print('connectivityResult11 13 $connectivityResult');
-
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-
-
-                    if (connectivityResult != ConnectivityResult.none && LoadPageError) {
-                      print('loadrequesttttt $deepLinkingURL');
-                      LoadPageError = false;
-                      delaySec = 3;
-
-                        _webViewController.loadRequest(Uri.parse(deepLinkingURL));
-
-
-                    }
-
-                    if (connectivityResult == ConnectivityResult.none) {
-                      LoadPageError = true;
-                      return Center(
-                        child: NoInternetConnectionPage(
-                          tryAgain: _checkInitialConnectivity,
-                        ),
-                      );
-                    } else {
-                      // Delay before showing the WebViewWidget
-                      return FutureBuilder(
-                        future: Future.delayed(Duration(seconds: delaySec)), // Adjust the duration as needed
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting && delaySec == 3) {
-                            delaySec == 0;
-                            return Center(child: CircularProgressIndicator(color: Colors.blue.shade600,));
-                          } else {
-                            return Container(
-                              margin: EdgeInsets.only(top: _statusBarHeight),
-                              child: WebViewWidget(
-                                controller: _webViewController
-                               // ..loadRequest(Uri.parse(deepLinkingURL))
-                                  ..enableZoom(false)
-                                  // ..setOnConsoleMessage((JavaScriptConsoleMessage message) {
-                                  //   print("ddd [${message.level.name}] ${message.message}");
-                                  // })
-                                  ..setJavaScriptMode(JavaScriptMode.unrestricted)
-                                  ..setBackgroundColor(const Color(0x00000000))
-                                  ..setNavigationDelegate(
-                                    NavigationDelegate(
-                                      onProgress: (int progress) {
-                                        print('progress $progress');
-                                      },
-                                      onPageStarted: (String url) {
-                                        setState(() {
-                                          if(url == Config.HOME_URL){
-                                            _tabController.index = 0;
-                                          }else if(url.contains('buy')) {
-                                            _tabController.index = 1;
-                                          }else if(url.contains('rent')) {
-                                            _tabController.index = 2;
-                                          }else if(url.contains('\$999')) {
-                                            _tabController.index = 3;
-                                          }
-
-                                        });
-                                        print('onPageStarted $url');
-                                      },
-                                      onPageFinished: (String url) {
-                                        print('onPageFinished $url');
-                                      },
-                                      onWebResourceError: (WebResourceError error) {
-                                        print('LoadPageError ${error.errorCode}');
-
-                                        print('onWebResourceError ${error.errorType} ${error.errorCode} ${error.description}');
-                                        if (error.errorCode == -2) {
-                                          LoadPageError = true;
-
-                                        } else if (error.errorCode == -8) {
-                                          LoadPageError = true;
-                                        }
-                                      },
-                                      onHttpError: (HttpResponseError error) {
-                                        print('httpResponseError $error');
-                                      },
-                                      onNavigationRequest: (NavigationRequest request) {
-                                        print('urlcheckvalue ${request.url}');
-                                        return NavigationDecision.navigate;
+                                          },
+                                        );
                                       },
                                     ),
                                   ),
+                                ],
                               ),
-                            );
-                          }
-                        },
-                      );
-                    }
-                  },
+                            ),
+                          ),
+                          Container(
+                            color: Colors.white,
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              padding: const EdgeInsets.all(8),
+                              itemCount: widget.nativeItem.side?.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return DrawerMenuItem(
+                                  selectedLanguageID: mSelectedLanguageID,
+                                  selectedLanguageURL: mSelectedLanguageURL,
+                                  parenturl: widget.nativeItem.side![index].uRL!,
+                                  parentID: widget.nativeItem.side![index].id!,
+                                  base64Icon: widget.nativeItem.side![index].icon!,
+                                  base64IconMenu:
+                                  widget.nativeItem.side![index].menuIcon!,
+                                  subList: widget.nativeItem.side![index].subList!,
+                                  title: widget.nativeItem.side![index].title!,
+                                  onTap: (String url, String id, String icon) async {
+
+
+                                    print('parentURL ${url} ParentID ${id}');
+
+                                    int _index = 0;
+                                    int foundIndex = -1;
+                                    widget.nativeItem.bottom?.forEach((element) {
+                                      if (element.id == id) {
+                                        foundIndex = _index;
+                                        return;
+                                      }
+                                      _index++;
+                                    });
+
+                                    if (widget.nativeItem.side![index].id! == Config.CURRENCY_ID) {
+                                      print('LanguageIDdd ${widget.nativeItem.side![index].id!}');
+                                      print('LanguageID ${url}');
+                                      mSelectedLanguageID = id;
+                                      mSelectedLanguageURL = url;
+
+                                      String jsCode = '{"currency": "${url}", "symbol": "${icon}"}';
+                                      _webViewController.runJavaScript('changeCurrency(`$jsCode`)');
+                                      await setPrefStringValue(Config.LANUAGE_ID, id);
+                                      await setPrefStringValue(Config.LANUAGE_URL, url);
+                                      // handle
+                                    } else if (foundIndex != -1) {
+                                      print('parentURL  1111');
+
+                                      _tabController.index = foundIndex;
+                                      _onTabTapped(foundIndex, url, id);
+                                    } else {
+                                      print('parentURL  2222');
+
+                                      _onTabTapped(0, url,id);
+                                      _tabController.index = 4;
+
+                                    }
+
+                                    _scaffoldKey.currentState?.closeDrawer();
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ],
+              body: Column(
+                children: [
+                  Expanded(
+                    child: _initialConnectivity == null
+                        ? Center(
+                      child: CircularProgressIndicator(),
+                    ) // Show loading indicator while checking initial connectivity
+                        : StreamBuilder<ConnectivityResult>(
+                      stream: _connectivityStream,
+                      builder: (BuildContext context, AsyncSnapshot<ConnectivityResult> snapshot) {
+                        // Check initial connectivity if stream has not emitted any data yet
+                        final connectivityResult = snapshot.data ?? _initialConnectivity;
+
+                        print('connectivityResult11 $connectivityResult');
+
+                        if (snapshot.connectionState == ConnectionState.waiting && connectivityResult == null) {
+                          print('connectivityResult11 13 $connectivityResult');
+
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+
+
+                        if (connectivityResult != ConnectivityResult.none && LoadPageError) {
+                          print('loadrequesttttt $deepLinkingURL');
+                          LoadPageError = false;
+                          delaySec = 3;
+
+                          _webViewController.loadRequest(Uri.parse(deepLinkingURL));
+
+
+                        }
+
+                        if (connectivityResult == ConnectivityResult.none) {
+                          LoadPageError = true;
+                          return Center(
+                            child: NoInternetConnectionPage(
+                              tryAgain: _checkInitialConnectivity,
+                            ),
+                          );
+                        } else {
+                          // Delay before showing the WebViewWidget
+                          return FutureBuilder(
+                            future: Future.delayed(Duration(seconds: delaySec)), // Adjust the duration as needed
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting && delaySec == 3) {
+                                delaySec == 0;
+                                return Center(child: CircularProgressIndicator(color: Colors.blue.shade600,));
+                              } else {
+                                return Container(
+                                  margin: EdgeInsets.only(top: _statusBarHeight),
+                                  child: WebViewWidget(
+                                    controller: _webViewController
+                                    // ..loadRequest(Uri.parse(deepLinkingURL))
+                                      ..enableZoom(false)
+                                    // ..setOnConsoleMessage((JavaScriptConsoleMessage message) {
+                                    //   print("ddd [${message.level.name}] ${message.message}");
+                                    // })
+                                      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+                                      ..setBackgroundColor(const Color(0x00000000))
+                                      ..setNavigationDelegate(
+                                        NavigationDelegate(
+                                          onProgress: (int progress) {
+                                            print('progress $progress');
+                                          },
+                                          onPageStarted: (String url) {
+                                            setState(() {
+                                              if(url == Config.HOME_URL){
+                                                _tabController.index = 0;
+                                              }else if(url.contains('buy')) {
+                                                _tabController.index = 1;
+                                              }else if(url.contains('rent')) {
+                                                _tabController.index = 2;
+                                              }else if(url.contains('\$999')) {
+                                                _tabController.index = 3;
+                                              }
+
+                                            });
+                                            print('onPageStarted $url');
+                                          },
+                                          onPageFinished: (String url) {
+                                            print('onPageFinished $url');
+                                          },
+                                          onWebResourceError: (WebResourceError error) {
+                                            print('LoadPageError ${error.errorCode}');
+
+                                            print('onWebResourceError ${error.errorType} ${error.errorCode} ${error.description}');
+                                            if (error.errorCode == -2) {
+                                              LoadPageError = true;
+
+                                            } else if (error.errorCode == -8) {
+                                              LoadPageError = true;
+                                            }
+                                          },
+                                          onHttpError: (HttpResponseError error) {
+                                            print('httpResponseError $error');
+                                          },
+                                          onNavigationRequest: (NavigationRequest request) {
+
+                                            final url = request.url;
+
+                                            // Handle mailto links
+                                            if (url.startsWith('mailto:')) {
+                                              _launchUrl(url);
+                                              return NavigationDecision.prevent;
+                                            }
+
+                                            // Handle social media and store links
+                                            final socialMediaPrefixes = [
+                                              'https://play.google.com',
+                                              'https://apps.apple.com',
+                                              'https://www.facebook.com',
+                                              'https://twitter.com',
+                                              'https://www.instagram.com',
+                                              'https://www.linkedin.com',
+                                              'https://www.youtube.com',
+                                              'https://www.tiktok.com',
+                                            ];
+
+                                            for (var prefix in socialMediaPrefixes) {
+                                              if (url.startsWith(prefix)) {
+                                                _launchUrl(url);
+                                                return NavigationDecision.prevent;
+                                              }
+                                            }
+
+                                            return NavigationDecision.navigate;
+
+
+                                          },
+                                        ),
+                                      ),
+                                  ),
+                                );
+                              }
+                            },
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              ),
+
+              bottomNavigationBar: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border(
+                    top: BorderSide(
+                      color: Colors.grey, // Top border color for the TabBar
+                      width: 0.5, // Width of the top border
+                    ),
+                  ),
+                ),
+                child: TabBar(
+                  labelColor: Colors.red,
+                  unselectedLabelColor: Colors.black,
+                  controller: _tabController,
+                  indicator: BoxDecoration(
+                    border: Border(
+                      top: BorderSide(
+                        color: Colors.red, // Color of the indicator
+                        width: 4.0, // Height of the indicator
+                      ),
+                    ),
+                  ),
+                  labelPadding: EdgeInsets.symmetric(vertical: 0),
+                  labelStyle: TextStyle(fontSize: 13, fontFamily: 'Poppins'),
+                  splashFactory: NoSplash.splashFactory,
+                  onTap: (index) {
+                    final url = widget.nativeItem.bottom![index].uRL!;
+                    _onTabTapped(index, url,widget.nativeItem.bottom![index].id!);
+                  },
+                  tabs: widget.nativeItem.bottom!.map((item) {
+                    final svgBytes = base64Decode(item.icon!);
+                    final svgString = utf8.decode(svgBytes);
+                    return Tab(
+                      icon: SvgPicture.string(
+                        svgString,
+                        width: 24.0,
+                        height: 24.0,
+                        color: _tabController.index ==
+                            widget.nativeItem.bottom!.indexOf(item)
+                            ? Colors.red
+                            : Colors.black,
+                      ),
+                      text: item.title,
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
           ),
 
-          bottomNavigationBar: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border(
-                top: BorderSide(
-                  color: Colors.grey, // Top border color for the TabBar
-                  width: 0.5, // Width of the top border
-                ),
-              ),
+          if (isLoading)
+            Center(
+              child: CircularProgressIndicator(color: Colors.blue.shade900,),
             ),
-            child: TabBar(
-              labelColor: Colors.red,
-              unselectedLabelColor: Colors.black,
-              controller: _tabController,
-              indicator: BoxDecoration(
-                border: Border(
-                  top: BorderSide(
-                    color: Colors.red, // Color of the indicator
-                    width: 4.0, // Height of the indicator
-                  ),
-                ),
-              ),
-              labelPadding: EdgeInsets.symmetric(vertical: 0),
-              labelStyle: TextStyle(fontSize: 13, fontFamily: 'Poppins'),
-              splashFactory: NoSplash.splashFactory,
-              onTap: (index) {
-                final url = widget.nativeItem.bottom![index].uRL!;
-                _onTabTapped(index, url,widget.nativeItem.bottom![index].id!);
-              },
-              tabs: widget.nativeItem.bottom!.map((item) {
-                final svgBytes = base64Decode(item.icon!);
-                final svgString = utf8.decode(svgBytes);
-                return Tab(
-                  icon: SvgPicture.string(
-                    svgString,
-                    width: 24.0,
-                    height: 24.0,
-                    color: _tabController.index ==
-                        widget.nativeItem.bottom!.indexOf(item)
-                        ? Colors.red
-                        : Colors.black,
-                  ),
-                  text: item.title,
-                );
-              }).toList(),
-            ),
-          ),
-        ),
+        ],
       ),
     );
   }
@@ -793,9 +836,12 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
         shareURL(data['text'],data['url']);
         //title
       }else if(data['flutter'] == 'profile')  {
-        setState(() {
-          profileResponse = ProfileResponse.fromJson(data);
-        });
+        if(!profileUpdated) {
+          profileUpdated = true;
+          setState(() {
+            profileResponse = ProfileResponse.fromJson(data);
+          });
+        }
 
         print('profileRespons ${profileResponse!.toJson()}');
 
@@ -839,6 +885,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
       print('fcmToken : $fcmToken');
       webViewController.runJavaScript('setToken("$fcmToken")');
     }else if(message == "GetLocation") {
+
       print('getcalllll');
       setLatLongToWeb(webViewController,context);
 
@@ -848,12 +895,16 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
 
 
   Future<void> setLatLongToWeb(WebViewController webViewController, BuildContext context) async {
+    print('check 1');
 
     Location location = Location();
     bool serviceEnabled = await location.serviceEnabled();
     if (!serviceEnabled) {
+      print('check 2');
       serviceEnabled = await location.requestService();
       if (!serviceEnabled) {
+        print('check 3');
+
         return;
       }
     }
@@ -861,8 +912,11 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
+      print('check 4');
 
       if(permission == LocationPermission.deniedForever) {
+        print('check 5');
+
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -889,10 +943,11 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
         return;
       } else if (permission != LocationPermission.whileInUse &&
           permission != LocationPermission.always) {
+        print('check 6');
         return;
       }
-    }
 
+    }
     Position? position = await Geolocator.getLastKnownPosition();
     print('CurrentLatLong - Latitude: ${position?.latitude}, Longitude: ${position?.longitude}');
 
@@ -901,9 +956,6 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
       webViewController.runJavaScript('getLatLong(`$jsCode`)');
     }
   }
-
-
-
 
 
   Future<void> _exitApp(BuildContext context) async {
@@ -1010,7 +1062,9 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
     String? croppedImagePath = await cropImage(imgFile);
     print("croppedImagePath $croppedImagePath");
     File file = File('$croppedImagePath');
-
+      setState(() {
+        isLoading = true;
+      });
     // Read the file at the specified path
    uploadImage(file);
   }
@@ -1032,7 +1086,12 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
       final responseData = jsonEncode(response.data);
 
       if (response.statusCode == 200) {
-       _webViewController.runJavaScript('getFileBytesData(`$responseData`)');
+        profileUpdated = false;
+        setState(() {
+          isLoading = false;
+        });
+        _webViewController.runJavaScript('getFileBytesData(`$responseData`)');
+
 
       } else {
         print('Image upload failed: ${response.statusCode}');

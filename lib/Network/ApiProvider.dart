@@ -13,7 +13,12 @@ import '../model/native_item.dart';
 
 class ApiProvider {
   final Dio _dio = Dio();
-  final String _baseUrl = 'https://uatapi.savemax.com/userservice/api/configs/';
+
+  // production
+  final String _baseUrl = 'https://api.savemax.com/userservice/api/configs/';
+
+  // uat
+ // final String _baseUrl = 'https://uatapi.savemax.com/userservice/api/configs/';
 
   ApiProvider() {
     // Add interceptors for logging and error handling

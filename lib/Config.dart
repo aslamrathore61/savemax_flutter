@@ -2,9 +2,9 @@ class Config {
 
 
   // static const String HOST = "syncmob.savemax.com";
- // static const String HOME_URL = "https://savemax.com";
+ static const String HOME_URL = "https://savemax.com/";
  // static const String HOME_URL = "https://uat1.savemax.com/";
-  static const String HOME_URL = "http://192.168.1.18:3000";
+ //  static const String HOME_URL = "http://192.168.1.18:3000";
 
 
   //profile menu id
@@ -22,7 +22,6 @@ class Config {
   static const String RWR_Events = "db3579dffc5b4fb984143fa55e411234";
   static const String My_Events = "db3579dffc5b4fb984143fa55e45690";
   static const String LOGOUT_ID = "db3579dffc5b4fb984143fa55e411344";
-
 
 
   static const String CURRENCY_ID = "494efec28a7144db969a26ad98da58bf";
@@ -54,6 +53,7 @@ class Config {
  static const String ANDROID_VERSION = "android_version";
  static const String IOS_VERSION = "ios_version";
  static const String isMaintenance = "isMaintenance";
+ static const String imageURL = "imageURL";
 
 
 }
