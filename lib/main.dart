@@ -1,8 +1,10 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:savemax_flutter/model/user_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Component/UpdateMaintainance/ForceUpdateScreen.dart';
@@ -50,10 +52,16 @@ Future<void> main() async {
     Hive.registerAdapter(UserInfoAdapter());
   }
 
-  final fcmToken = await messaging.getToken();
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  print('fcmToakenValue ${fcmToken}');
-  await prefs.setString('fcmToken', '$fcmToken');
+
+  bool result = await InternetConnection().hasInternetAccess;
+  print('hasInternetAccess $result');
+
+  if(result) {
+    final fcmToken = await messaging.getToken();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('fcmToken', '$fcmToken');
+  }
+
 
   channel = const AndroidNotificationChannel(
       'flutter_notification', // id

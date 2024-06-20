@@ -1,7 +1,7 @@
 PODS:
   - connectivity_plus (0.0.1):
     - Flutter
-    - ReachabilitySwift
+    - FlutterMacOS
   - device_info_plus (0.0.1):
     - Flutter
   - Firebase/CoreOnly (10.25.0):
@@ -124,7 +124,6 @@ PODS:
   - PromisesObjC (2.4.0)
   - PromisesSwift (2.4.0):
     - PromisesObjC (= 2.4.0)
-  - ReachabilitySwift (5.2.2)
   - share_plus (0.0.1):
     - Flutter
   - shared_preferences_foundation (0.0.1):
@@ -137,7 +136,7 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
-  - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
+  - connectivity_plus (from `.symlinks/plugins/connectivity_plus/darwin`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_crashlytics (from `.symlinks/plugins/firebase_crashlytics/ios`)
@@ -174,12 +173,11 @@ SPEC REPOS:
     - nanopb
     - PromisesObjC
     - PromisesSwift
-    - ReachabilitySwift
     - TOCropViewController
 
 EXTERNAL SOURCES:
   connectivity_plus:
-    :path: ".symlinks/plugins/connectivity_plus/ios"
+    :path: ".symlinks/plugins/connectivity_plus/darwin"
   device_info_plus:
     :path: ".symlinks/plugins/device_info_plus/ios"
   firebase_core:
@@ -220,7 +218,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/webview_flutter_wkwebview/ios"
 
 SPEC CHECKSUMS:
-  connectivity_plus: bf0076dd84a130856aa636df1c71ccaff908fa1d
+  connectivity_plus: ddd7f30999e1faaef5967c23d5b6d503d10434db
   device_info_plus: c6fb39579d0f423935b0c9ce7ee2f44b71b9fce6
   Firebase: 0312a2352584f782ea56f66d91606891d4607f06
   firebase_core: a626d00494efa398e7c54f25f1454a64c8abf197
@@ -250,7 +248,6 @@ SPEC CHECKSUMS:
   permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
-  ReachabilitySwift: 2128f3a8c9107e1ad33574c6e58e8285d460b149
   share_plus: 8875f4f2500512ea181eef553c3e27dba5135aad
   shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863

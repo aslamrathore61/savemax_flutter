@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -14,6 +13,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hive/hive.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:location/location.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -64,7 +64,6 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool isProfileMenuVisible = false;
   bool userDetailsAvaible = false;
-  bool LoadPageError = false;
   UserInfo? _userInfo;
   String mSelectedLanguageID = "";
   String mSelectedLanguageURL = "";
@@ -72,16 +71,14 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
   final picker = ImagePicker();
   late String deepLinkingURL;
   int currentTabIndex = 0;
-  int delaySec = 0;
+  bool tabGetChangesAfterInternetGon = false;
+  bool IsInternetConnected = true;
 
 
   ProfileResponse? profileResponse;
   bool profileUpdated = false;
   bool isLoading = false;
 
-  final Connectivity _connectivity = Connectivity();
-  late Stream<ConnectivityResult> _connectivityStream;
-  ConnectivityResult? _initialConnectivity;
 
   Future<void> setupInteractedMessage() async {
     // To handle messages while your application is in the foreground, listen to the onMessage stream
@@ -166,18 +163,36 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
     }
 
     print('loadrequest 2');
-    CommonLoadRequest(deepLinkingURL, _webViewController,context);
-
-
+    CommonLoadRequest(deepLinkingURL, _webViewController,context,"1");
 
   }
 
-  void CommonLoadRequest(String url, WebViewController webViewController, BuildContext _context) {
+  void CommonLoadRequest(String url, WebViewController webViewController, BuildContext _context, String debugValue) {
+    print('debugValue : ${debugValue}');
 
     javaScriptCall(webViewController,_context);
     // _webViewController.loadHtmlString(html);
-   _webViewController.loadRequest(Uri.parse(url));
+    _webViewController.loadRequest(Uri.parse(url));
+  }
 
+  void _internetConnectionStatus() {
+    InternetConnection().onStatusChange.listen((InternetStatus status) {
+      switch (status) {
+        case InternetStatus.connected:
+          setState(() {
+            IsInternetConnected = true;
+            if(tabGetChangesAfterInternetGon) {
+              CommonLoadRequest(deepLinkingURL, _webViewController, context,"2");
+            }
+          });
+          break;
+        case InternetStatus.disconnected:
+          setState(() {
+            IsInternetConnected = false;
+          });
+          break;
+      }
+    });
 
   }
 
@@ -185,9 +200,11 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
     await platform.invokeMethod('AppIconChange', message);
   }
 
+
   @override
   void initState() {
     super.initState();
+    _internetConnectionStatus();
 
     if (widget.userInfo != null) {
       userDetailsAvaible = true;
@@ -198,8 +215,6 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
       statusBarColor: Colors.grey, // Change this to the desired color
     ));
 
-
-    _connectivityStream = _connectivity.onConnectivityChanged;
 
     // #docregion platform_features
     late final PlatformWebViewControllerCreationParams params;
@@ -244,7 +259,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
 
 
 
-      CommonLoadRequest(deepLinkingURL, _webViewController, context);
+      CommonLoadRequest(deepLinkingURL, _webViewController, context,"3");
 
     }
 
@@ -270,6 +285,9 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
     } else {
       if (url.isEmpty) return;
 
+      if(!IsInternetConnected) {
+        tabGetChangesAfterInternetGon = true;
+      }
 
       // Load the URL for the selected tab
       if (url.startsWith(Config.HOME_URL) ||
@@ -284,7 +302,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
         }
 
         setState(() {
-          CommonLoadRequest(deepLinkingURL, _webViewController, context);
+          CommonLoadRequest(deepLinkingURL, _webViewController, context,"4");
           // _webViewController.loadHtmlString(html);
         });
 
@@ -312,10 +330,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
     }
   }
 
-  Future<void> _checkInitialConnectivity() async {
-    _initialConnectivity = await _connectivity.checkConnectivity();
-    print('_initialConnectivity ${_initialConnectivity}');
-    setState(() {}); // Update the UI after checking initial connectivity
+  void _checkInitialConnectivity() {
   }
 
   Future<void> getSelectedLanguageID() async {
@@ -335,7 +350,8 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     _statusBarHeight = MediaQuery.of(context).padding.top;
-    print('statusbarHeight $_statusBarHeight');
+    print('DebuggCheking DebuggCheking');
+   // print('_initialConnectivity111 $_initialConnectivity');
     return PopScope(
       canPop: canPop,
       onPopInvoked: (didPop) async {
@@ -346,6 +362,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
       child: Stack(
         children: [
           Container(
+            color: Colors.red,
             //    margin: EdgeInsets.only(top: _statusBarHeight),
             child: Scaffold(
               key: _scaffoldKey,
@@ -603,75 +620,31 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
                   ),
                 ),
               ),
-              body: Column(
-                children: [
-                  Expanded(
-                    child: _initialConnectivity == null
-                        ? Center(
-                      child: CircularProgressIndicator(),
-                    ) // Show loading indicator while checking initial connectivity
-                        : StreamBuilder<ConnectivityResult>(
-                      stream: _connectivityStream,
-                      builder: (BuildContext context, AsyncSnapshot<ConnectivityResult> snapshot) {
-                        // Check initial connectivity if stream has not emitted any data yet
-                        final connectivityResult = snapshot.data ?? _initialConnectivity;
 
-                        print('connectivityResult11 $connectivityResult');
-
-                        if (snapshot.connectionState == ConnectionState.waiting && connectivityResult == null) {
-                          print('connectivityResult11 13 $connectivityResult');
-
-                          return Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-
-
-                        if (connectivityResult != ConnectivityResult.none && LoadPageError) {
-                          print('loadrequesttttt $deepLinkingURL');
-                          LoadPageError = false;
-                          delaySec = 3;
-
-                          _webViewController.loadRequest(Uri.parse(deepLinkingURL));
-
-
-                        }
-
-                        if (connectivityResult == ConnectivityResult.none) {
-                          LoadPageError = true;
-                          return Center(
-                            child: NoInternetConnectionPage(
-                              tryAgain: _checkInitialConnectivity,
-                            ),
-                          );
-                        } else {
-                          // Delay before showing the WebViewWidget
-                          return FutureBuilder(
-                            future: Future.delayed(Duration(seconds: delaySec)), // Adjust the duration as needed
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState == ConnectionState.waiting && delaySec == 3) {
-                                delaySec == 0;
-                                return Center(child: CircularProgressIndicator(color: Colors.blue.shade600,));
-                              } else {
-                                return Container(
-                                  margin: EdgeInsets.only(top: _statusBarHeight),
-                                  child: WebViewWidget(
-                                    controller: _webViewController
-                                    // ..loadRequest(Uri.parse(deepLinkingURL))
-                                      ..enableZoom(false)
-                                    // ..setOnConsoleMessage((JavaScriptConsoleMessage message) {
-                                    //   print("ddd [${message.level.name}] ${message.message}");
-                                    // })
-                                      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-                                      ..setBackgroundColor(const Color(0x00000000))
-                                      ..setNavigationDelegate(
-                                        NavigationDelegate(
-                                          onProgress: (int progress) {
-                                            print('progress $progress');
-                                          },
-                                          onPageStarted: (String url) {
-                                            setState(() {
-                                              if(url == Config.HOME_URL){
+              body: IsInternetConnected == false ? Center(
+                child: NoInternetConnectionPage(
+                  tryAgain: _checkInitialConnectivity,
+                ),
+              ) : Container(
+                color: Colors.white,
+                margin: EdgeInsets.only(top: _statusBarHeight),
+                child: WebViewWidget(
+                  controller: _webViewController
+                  //  ..loadRequest(Uri.parse(deepLinkingURL))
+                    ..enableZoom(false)
+                  // ..setOnConsoleMessage((JavaScriptConsoleMessage message) {
+                  //   print("ddd [${message.level.name}] ${message.message}");
+                  // })
+                    ..setJavaScriptMode(JavaScriptMode.unrestricted)
+                    ..setBackgroundColor(const Color(0x00000000))
+                    ..setNavigationDelegate(
+                      NavigationDelegate(
+                        onProgress: (int progress) {
+                          print('progress $progress');
+                        },
+                        onPageStarted: (String url) {
+                          setState(() {
+                           if(url == Config.HOME_URL){
                                                 _tabController.index = 0;
                                               }else if(url.contains('buy')) {
                                                 _tabController.index = 1;
@@ -680,77 +653,171 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
                                               }else if(url.contains('\$999')) {
                                                 _tabController.index = 3;
                                               }
-
-                                            });
-                                            print('onPageStarted $url');
-                                          },
-                                          onPageFinished: (String url) {
-                                            print('onPageFinished $url');
-                                          },
-                                          onWebResourceError: (WebResourceError error) {
-                                            print('LoadPageError ${error.errorCode}');
-
-                                            print('onWebResourceError ${error.errorType} ${error.errorCode} ${error.description}');
+                           });
+                          print('onPageStarted $url');
+                        },
+                        onPageFinished: (String url) {
+                          print('onPageFinished $url');
+                        },
+                        onWebResourceError: (WebResourceError error) {
+                          /* print('onWebResourceError ${error.errorType} ${error.errorCode} ${error.description}');
 
                                             if (error.errorCode == -2) {
-                                              LoadPageError = true;
                                             } else if (error.errorCode == -8) {
-                                              LoadPageError = true;
                                             }else if(error.errorCode == -1001) {
-                                              _webViewController.reload();
                                             }else if(error.errorCode == -999) {
-                                              _webViewController.reload();
                                             }
-                                          },
-                                          onHttpError: (HttpResponseError error) {
-                                            print('httpResponseError $error');
-                                          },
-                                          onNavigationRequest: (NavigationRequest request) {
+                                          */
+                        },
+                        onHttpError: (HttpResponseError error) {
+                          print('httpResponseError $error');
+                        },
+                        onNavigationRequest: (NavigationRequest request) {
 
-                                            final url = request.url;
+                          final url = request.url;
 
-                                            // Handle mailto links
-                                            if (url.startsWith('mailto:')) {
-                                              _launchUrl(url);
-                                              return NavigationDecision.prevent;
-                                            }
+                          // Handle mailto links
+                          if (url.startsWith('mailto:')) {
+                            _launchUrl(url);
+                            return NavigationDecision.prevent;
+                          }
 
-                                            // Handle social media and store links
-                                            final socialMediaPrefixes = [
-                                              'https://play.google.com',
-                                              'https://apps.apple.com',
-                                              'https://www.facebook.com',
-                                              'https://twitter.com',
-                                              'https://www.instagram.com',
-                                              'https://www.linkedin.com',
-                                              'https://www.youtube.com',
-                                              'https://www.tiktok.com',
-                                            ];
+                          // Handle social media and store links
+                          final socialMediaPrefixes = [
+                            'https://play.google.com',
+                            'https://apps.apple.com',
+                            'https://www.facebook.com',
+                            'https://twitter.com',
+                            'https://www.instagram.com',
+                            'https://www.linkedin.com',
+                            'https://www.youtube.com',
+                            'https://www.tiktok.com',
+                          ];
 
-                                            for (var prefix in socialMediaPrefixes) {
-                                              if (url.startsWith(prefix)) {
-                                                _launchUrl(url);
-                                                return NavigationDecision.prevent;
-                                              }
-                                            }
+                          for (var prefix in socialMediaPrefixes) {
+                            if (url.startsWith(prefix)) {
+                              _launchUrl(url);
+                              return NavigationDecision.prevent;
+                            }
+                          }
 
-                                            return NavigationDecision.navigate;
+                          return NavigationDecision.navigate;
 
 
-                                          },
-                                        ),
-                                      ),
-                                  ),
-                                );
-                              }
-                            },
-                          );
-                        }
-                      },
+                        },
+                      ),
                     ),
-                  ),
-                ],
+                ),
               ),
+//               body: Column(
+//                 children: [
+//                   Expanded(
+//                     child: StreamBuilder<ConnectivityResult>(
+//                       stream: _connectivityStream,
+//                       builder: (BuildContext context, AsyncSnapshot<ConnectivityResult> snapshot) {
+//                         // Check initial connectivity if stream has not emitted any data yet
+//                         final connectivityResult = snapshot.data ?? _initialConnectivity;
+//
+//                         print('connectivityResult11 $connectivityResult');
+//
+//                         if (connectivityResult == ConnectivityResult.none) {
+//                           return Center(
+//                             child: NoInternetConnectionPage(
+//                               tryAgain: _checkInitialConnectivity,
+//                             ),
+//                           );
+//                         } else {
+//                           // Delay before showing the WebViewWidget
+//                           return Container(
+//                                   margin: EdgeInsets.only(top: _statusBarHeight),
+//                                   child: WebViewWidget(
+//                                     controller: _webViewController
+//                                     ..loadRequest(Uri.parse(deepLinkingURL))
+//                                       ..enableZoom(false)
+//                                     // ..setOnConsoleMessage((JavaScriptConsoleMessage message) {
+//                                     //   print("ddd [${message.level.name}] ${message.message}");
+//                                     // })
+//                                       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+//                                       ..setBackgroundColor(const Color(0x00000000))
+//                                       ..setNavigationDelegate(
+//                                         NavigationDelegate(
+//                                           onProgress: (int progress) {
+//                                             print('progress $progress');
+//                                           },
+//                                           onPageStarted: (String url) {
+//                                             //setState(() {
+//                                              /* if(url == Config.HOME_URL){
+//                                                 _tabController.index = 0;
+//                                               }else if(url.contains('buy')) {
+//                                                 _tabController.index = 1;
+//                                               }else if(url.contains('rent')) {
+//                                                 _tabController.index = 2;
+//                                               }else if(url.contains('\$999')) {
+//                                                 _tabController.index = 3;
+//                                               }
+// */
+//                                           //  });
+//                                             print('onPageStarted $url');
+//                                           },
+//                                           onPageFinished: (String url) {
+//                                             print('onPageFinished $url');
+//                                           },
+//                                           onWebResourceError: (WebResourceError error) {
+//                                            /* print('onWebResourceError ${error.errorType} ${error.errorCode} ${error.description}');
+//
+//                                             if (error.errorCode == -2) {
+//                                             } else if (error.errorCode == -8) {
+//                                             }else if(error.errorCode == -1001) {
+//                                             }else if(error.errorCode == -999) {
+//                                             }
+//                                           */
+//                                           },
+//                                           onHttpError: (HttpResponseError error) {
+//                                             print('httpResponseError $error');
+//                                           },
+//                                           onNavigationRequest: (NavigationRequest request) {
+//
+//                                             final url = request.url;
+//
+//                                             // Handle mailto links
+//                                             if (url.startsWith('mailto:')) {
+//                                               _launchUrl(url);
+//                                               return NavigationDecision.prevent;
+//                                             }
+//
+//                                             // Handle social media and store links
+//                                             final socialMediaPrefixes = [
+//                                               'https://play.google.com',
+//                                               'https://apps.apple.com',
+//                                               'https://www.facebook.com',
+//                                               'https://twitter.com',
+//                                               'https://www.instagram.com',
+//                                               'https://www.linkedin.com',
+//                                               'https://www.youtube.com',
+//                                               'https://www.tiktok.com',
+//                                             ];
+//
+//                                             for (var prefix in socialMediaPrefixes) {
+//                                               if (url.startsWith(prefix)) {
+//                                                 _launchUrl(url);
+//                                                 return NavigationDecision.prevent;
+//                                               }
+//                                             }
+//
+//                                             return NavigationDecision.navigate;
+//
+//
+//                                           },
+//                                         ),
+//                                       ),
+//                                   ),
+//                                 );
+//                         }
+//                       },
+//                     ),
+//                   ),
+//                 ],
+//               ),
 
               bottomNavigationBar: Container(
                 decoration: BoxDecoration(
@@ -804,7 +871,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
 
           if (isLoading)
             Center(
-              child: CircularProgressIndicator(color: Colors.blue.shade900,),
+              child: CircularProgressIndicator(color: Colors.orange.shade900,),
             ),
         ],
       ),
