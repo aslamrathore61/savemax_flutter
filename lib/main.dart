@@ -84,14 +84,16 @@ Future<void> main() async {
 
   await initializeHive();
 
-
-
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  runApp(MaterialApp(
+  runApp( MaterialApp(
     themeMode: ThemeMode.light, // Always use light theme
-      theme: ThemeData(fontFamily: 'Poppins',),
+    theme: ThemeData(
+      brightness: Brightness.light,
+      fontFamily: 'Poppins', // Specify your custom font
+      // Customize your light theme here
+    ),
     home: RepositoryProvider(
 
       create: (context) => ApiProvider(),

@@ -302,7 +302,9 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin, 
     }
 
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Color(0xB3f3f4f8), // Change this to the desired color
+      statusBarColor: Color(0xe8f3f4f8), // Change this to the desired color
+      statusBarIconBrightness: Brightness.dark, // For dark status bar icons
+
     ));
 
 
