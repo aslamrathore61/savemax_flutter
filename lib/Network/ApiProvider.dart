@@ -6,8 +6,6 @@ import 'package:dio/io.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:savemax_flutter/Config.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import '../SharePrefFile.dart';
 import '../model/native_item.dart';
 

@@ -56,12 +56,14 @@ class TabBarPage extends StatefulWidget {
 
 /// [AnimationController]s can be created with `vsync: this` because of
 /// [TickerProviderStateMixin].
-class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
+class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin, WidgetsBindingObserver {
+  // GlobalKey<_TabBarPageState> _key = GlobalKey();
+
   late final TabController _tabController;
   late final WebViewController _webViewController;
 
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool isProfileMenuVisible = false;
   bool userDetailsAvaible = false;
   UserInfo? _userInfo;
@@ -78,6 +80,9 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
   ProfileResponse? profileResponse;
   bool profileUpdated = false;
   bool isLoading = false;
+  bool isAppInBackground = false;
+
+  
 
 
   Future<void> setupInteractedMessage() async {
@@ -175,35 +180,105 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
     _webViewController.loadRequest(Uri.parse(url));
   }
 
+
   void _internetConnectionStatus() {
     InternetConnection().onStatusChange.listen((InternetStatus status) {
-      switch (status) {
-        case InternetStatus.connected:
-          setState(() {
-            IsInternetConnected = true;
-            if(tabGetChangesAfterInternetGon) {
-              CommonLoadRequest(deepLinkingURL, _webViewController, context,"2");
-            }
-          });
-          break;
-        case InternetStatus.disconnected:
-          setState(() {
-            IsInternetConnected = false;
-          });
-          break;
+      if (!isAppInBackground) {
+        switch (status) {
+          case InternetStatus.connected:
+            setState(() {
+              print("internetConnected connected");
+              IsInternetConnected = true;
+              if (tabGetChangesAfterInternetGon) {
+                CommonLoadRequest(deepLinkingURL, _webViewController, context, "2");
+              }
+            });
+            break;
+          case InternetStatus.disconnected:
+            print("internetConnected Notconnected");
+            setState(() {
+              IsInternetConnected = false;
+            });
+            break;
+        }
       }
     });
-
   }
+
 
   void CallAppIconChangerMethod(String message) async {
     await platform.invokeMethod('AppIconChange', message);
   }
 
+  @override
+  void deactivate() {
+    // Cleanup logic here
+    print('deactivate');
+
+    super.deactivate();
+  }
+
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    print('didChangeDependencies');
+
+    // Handle dependencies here
+  }
+
+
+  void _rebuildWidget() {
+    setState(() {
+      // _key = GlobalKey(); // Change the key to force rebuild
+      _scaffoldKey =  GlobalKey<ScaffoldState>(); // Change the key to force rebuild
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    switch (state) {
+      case AppLifecycleState.inactive:
+      // App is inactive
+        print('AppLifecycleState $state');
+        break;
+      case AppLifecycleState.hidden:
+        print('AppLifecycleState $state');
+        break;
+      case AppLifecycleState.paused:
+      // App is
+        print('AppLifecycleState $state');
+        break;
+      case AppLifecycleState.resumed:
+        print('AppLifecycleState $state');
+        _rebuildWidget();
+
+        break;
+      case AppLifecycleState.detached:
+        print('AppLifecycleState $state');
+
+        // App is detached
+        break;
+
+    }
+       setState(() {
+      isAppInBackground = (state == AppLifecycleState.paused || state == AppLifecycleState.inactive);
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _internetConnectionStatus();
 
     if (widget.userInfo != null) {
@@ -212,7 +287,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
     }
 
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.grey, // Change this to the desired color
+      statusBarColor: Color(0xB3f3f4f8), // Change this to the desired color
     ));
 
 
@@ -229,6 +304,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
     }
 
     _webViewController = WebViewController.fromPlatformCreationParams(params);
+
 
 
 
@@ -266,11 +342,6 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
 
   }
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
 
   Future<void> _onTabTapped(int index, String url, String _id) async {
     currentTabIndex = index;
@@ -353,6 +424,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
     print('DebuggCheking DebuggCheking');
    // print('_initialConnectivity111 $_initialConnectivity');
     return PopScope(
+      // key: _key,
       canPop: canPop,
       onPopInvoked: (didPop) async {
         if (!didPop) {
@@ -394,6 +466,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
                     ".MainActivityB");
               },*/ /*
             ),*/
+
               drawer: Container(
                 width: MediaQuery.of(context).size.width - 74,
                 margin: EdgeInsets.only(top: _statusBarHeight),
@@ -692,6 +765,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
                             'https://www.linkedin.com',
                             'https://www.youtube.com',
                             'https://www.tiktok.com',
+                            'https://savemax.com/blogs/',
                           ];
 
                           for (var prefix in socialMediaPrefixes) {
@@ -709,115 +783,6 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
                     ),
                 ),
               ),
-//               body: Column(
-//                 children: [
-//                   Expanded(
-//                     child: StreamBuilder<ConnectivityResult>(
-//                       stream: _connectivityStream,
-//                       builder: (BuildContext context, AsyncSnapshot<ConnectivityResult> snapshot) {
-//                         // Check initial connectivity if stream has not emitted any data yet
-//                         final connectivityResult = snapshot.data ?? _initialConnectivity;
-//
-//                         print('connectivityResult11 $connectivityResult');
-//
-//                         if (connectivityResult == ConnectivityResult.none) {
-//                           return Center(
-//                             child: NoInternetConnectionPage(
-//                               tryAgain: _checkInitialConnectivity,
-//                             ),
-//                           );
-//                         } else {
-//                           // Delay before showing the WebViewWidget
-//                           return Container(
-//                                   margin: EdgeInsets.only(top: _statusBarHeight),
-//                                   child: WebViewWidget(
-//                                     controller: _webViewController
-//                                     ..loadRequest(Uri.parse(deepLinkingURL))
-//                                       ..enableZoom(false)
-//                                     // ..setOnConsoleMessage((JavaScriptConsoleMessage message) {
-//                                     //   print("ddd [${message.level.name}] ${message.message}");
-//                                     // })
-//                                       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-//                                       ..setBackgroundColor(const Color(0x00000000))
-//                                       ..setNavigationDelegate(
-//                                         NavigationDelegate(
-//                                           onProgress: (int progress) {
-//                                             print('progress $progress');
-//                                           },
-//                                           onPageStarted: (String url) {
-//                                             //setState(() {
-//                                              /* if(url == Config.HOME_URL){
-//                                                 _tabController.index = 0;
-//                                               }else if(url.contains('buy')) {
-//                                                 _tabController.index = 1;
-//                                               }else if(url.contains('rent')) {
-//                                                 _tabController.index = 2;
-//                                               }else if(url.contains('\$999')) {
-//                                                 _tabController.index = 3;
-//                                               }
-// */
-//                                           //  });
-//                                             print('onPageStarted $url');
-//                                           },
-//                                           onPageFinished: (String url) {
-//                                             print('onPageFinished $url');
-//                                           },
-//                                           onWebResourceError: (WebResourceError error) {
-//                                            /* print('onWebResourceError ${error.errorType} ${error.errorCode} ${error.description}');
-//
-//                                             if (error.errorCode == -2) {
-//                                             } else if (error.errorCode == -8) {
-//                                             }else if(error.errorCode == -1001) {
-//                                             }else if(error.errorCode == -999) {
-//                                             }
-//                                           */
-//                                           },
-//                                           onHttpError: (HttpResponseError error) {
-//                                             print('httpResponseError $error');
-//                                           },
-//                                           onNavigationRequest: (NavigationRequest request) {
-//
-//                                             final url = request.url;
-//
-//                                             // Handle mailto links
-//                                             if (url.startsWith('mailto:')) {
-//                                               _launchUrl(url);
-//                                               return NavigationDecision.prevent;
-//                                             }
-//
-//                                             // Handle social media and store links
-//                                             final socialMediaPrefixes = [
-//                                               'https://play.google.com',
-//                                               'https://apps.apple.com',
-//                                               'https://www.facebook.com',
-//                                               'https://twitter.com',
-//                                               'https://www.instagram.com',
-//                                               'https://www.linkedin.com',
-//                                               'https://www.youtube.com',
-//                                               'https://www.tiktok.com',
-//                                             ];
-//
-//                                             for (var prefix in socialMediaPrefixes) {
-//                                               if (url.startsWith(prefix)) {
-//                                                 _launchUrl(url);
-//                                                 return NavigationDecision.prevent;
-//                                               }
-//                                             }
-//
-//                                             return NavigationDecision.navigate;
-//
-//
-//                                           },
-//                                         ),
-//                                       ),
-//                                   ),
-//                                 );
-//                         }
-//                       },
-//                     ),
-//                   ),
-//                 ],
-//               ),
 
               bottomNavigationBar: Container(
                 decoration: BoxDecoration(
@@ -931,9 +896,15 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin {
     }
   }
 
-  void shareURL(String url, String text) {
-    Share.share('$text\n$url');
+
+  Future<void> shareURL(String url, String text) async {
+    ShareResult shareResult = await Share.share('$text\n$url');
+ /*  if(shareResult.status == ShareResultStatus.success) {
+   }
+*/
   }
+
+
 
   Future<void> _handleStringMessage(
       String message, WebViewController webViewController) async {
