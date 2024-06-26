@@ -54,6 +54,7 @@ class ApiProvider {
 
   /***  Native Item Get From Asset ***/
 
+/*
   Future<NativeItem> fetchMenuDetails() async {
     String jsonString = await rootBundle.loadString('assets/jsonFile/update_menu_file.json');
     Map<String, dynamic> jsonResponse = json.decode(jsonString);
@@ -84,6 +85,7 @@ class ApiProvider {
       return NativeItem(bottom: bottomItems, side: sideItems,profile: profileItems);
     }
   }
+*/
 
 
   // this is for ssl trust issue shold not go in production
@@ -98,7 +100,7 @@ class ApiProvider {
 
   /***  Native Item Get From API ***/
 
- /* Future<NativeItem> fetchMenuDetails() async {
+  Future<NativeItem> fetchMenuDetails() async {
     configureDio();
 
     int menuVersion = await getPrefIntegerValue(Config.REQUEST_APP_VERSION);
@@ -159,6 +161,6 @@ class ApiProvider {
       print('ExceptionError $e');
       return NativeItem(bottom: [], side: [], profile: []);
     }
-  }*/
+  }
 
 }

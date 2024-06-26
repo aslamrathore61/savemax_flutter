@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -74,6 +75,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin, 
   late String deepLinkingURL;
   int currentTabIndex = 0;
   bool tabGetChangesAfterInternetGon = false;
+  bool launchFirstTime = true;
   bool IsInternetConnected = true;
 
 
@@ -175,23 +177,33 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin, 
   void CommonLoadRequest(String url, WebViewController webViewController, BuildContext _context, String debugValue) {
     print('debugValue : ${debugValue}');
 
-    javaScriptCall(webViewController,_context);
-    // _webViewController.loadHtmlString(html);
-    _webViewController.loadRequest(Uri.parse(url));
+    if(IsInternetConnected) {
+      javaScriptCall(webViewController,_context);
+      // _webViewController.loadHtmlString(html);
+      _webViewController.loadRequest(Uri.parse(url));
+    }
+
   }
 
 
   void _internetConnectionStatus() {
     InternetConnection().onStatusChange.listen((InternetStatus status) {
-      if (!isAppInBackground) {
+    //  if (!isAppInBackground) {
         switch (status) {
           case InternetStatus.connected:
             setState(() {
               print("internetConnected connected");
-              IsInternetConnected = true;
-              if (tabGetChangesAfterInternetGon) {
+              if (tabGetChangesAfterInternetGon || launchFirstTime) {
+                launchFirstTime = false;
+                IsInternetConnected = true;
                 CommonLoadRequest(deepLinkingURL, _webViewController, context, "2");
               }
+
+            });
+            Future.delayed(Duration(microseconds: 1000), () {
+              setState(() {
+                IsInternetConnected = true;
+              });
             });
             break;
           case InternetStatus.disconnected:
@@ -201,7 +213,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin, 
             });
             break;
         }
-      }
+   //   }
     });
   }
 
@@ -239,6 +251,11 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin, 
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
 
+    setState(() {
+      isAppInBackground = (state == AppLifecycleState.paused || state == AppLifecycleState.inactive);
+      print('inAppInBackground');
+    });
+
     switch (state) {
       case AppLifecycleState.inactive:
       // App is inactive
@@ -253,7 +270,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin, 
         break;
       case AppLifecycleState.resumed:
         print('AppLifecycleState $state');
-        _rebuildWidget();
+       _rebuildWidget();
 
         break;
       case AppLifecycleState.detached:
@@ -263,9 +280,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin, 
         break;
 
     }
-       setState(() {
-      isAppInBackground = (state == AppLifecycleState.paused || state == AppLifecycleState.inactive);
-    });
+
   }
 
   @override
@@ -335,7 +350,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin, 
 
 
 
-      CommonLoadRequest(deepLinkingURL, _webViewController, context,"3");
+      // CommonLoadRequest(deepLinkingURL, _webViewController, context,"3");
 
     }
 
