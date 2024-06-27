@@ -577,6 +577,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin, 
                                               ? Text(
                                             _userInfo!.name!
                                                 .split(' ')
+                                                .take(2)
                                                 .map((String word) {
                                               return word
                                                   .substring(0, 1)
