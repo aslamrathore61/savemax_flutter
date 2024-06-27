@@ -43,6 +43,16 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 
+
+/*
+
+LocationPermission
+
+
+
+
+
+*/
 /// Flutter code sample for [TabBar].
 
 class TabBarPage extends StatefulWidget {
@@ -178,9 +188,9 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin, 
     print('debugValue : ${debugValue}');
 
     if(IsInternetConnected) {
-      javaScriptCall(webViewController,_context);
+     javaScriptCall(webViewController,_context);
       // _webViewController.loadHtmlString(html);
-      _webViewController.loadRequest(Uri.parse(url));
+     _webViewController.loadRequest(Uri.parse(url));
     }
 
   }
@@ -188,7 +198,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin, 
 
   void _internetConnectionStatus() {
     InternetConnection().onStatusChange.listen((InternetStatus status) {
-    //  if (!isAppInBackground) {
+     if (!isAppInBackground) {
         switch (status) {
           case InternetStatus.connected:
             setState(() {
@@ -213,7 +223,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin, 
             });
             break;
         }
-   //   }
+     }
     });
   }
 
@@ -312,7 +322,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin, 
     late final PlatformWebViewControllerCreationParams params;
     if (WebViewPlatform.instance is WebKitWebViewPlatform) {
       params = WebKitWebViewControllerCreationParams(
-        allowsInlineMediaPlayback: true,
+       // allowsInlineMediaPlayback: true,
         mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{},
       );
 
@@ -946,7 +956,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin, 
     }else if(message == "GetLocation") {
 
       print('getcalllll');
-      setLatLongToWeb(webViewController,context);
+     setLatLongToWeb(webViewController,context);
 
     }
   }
@@ -1013,7 +1023,6 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin, 
       webViewController.runJavaScript('getLatLong(`$jsCode`)');
     }
   }
-
 
   Future<void> _exitApp(BuildContext context) async {
     if (await _webViewController.canGoBack()) {

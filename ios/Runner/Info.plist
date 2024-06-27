@@ -98,12 +98,10 @@
     </dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Your message explaining why the app needs location access</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>Your message explaining why the app needs location access</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	 <key>NSLocationWhenInUseUsageDescription</key>
+     <string>Need location permission for area project listing</string>
 	<key>CFBundleDisplayName</key>
 	<string>Savemax Flutter</string>
 	<key>CFBundleExecutable</key>
@@ -116,6 +114,7 @@
 	<string>savemax_flutter</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
+
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
