@@ -1,4 +1,3 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -52,7 +51,6 @@ Future<void> main() async {
     Hive.registerAdapter(UserInfoAdapter());
   }
 
-
   bool result = await InternetConnection().hasInternetAccess;
   print('hasInternetAccess $result');
 
@@ -61,7 +59,6 @@ Future<void> main() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('fcmToken', '$fcmToken');
   }
-
 
   channel = const AndroidNotificationChannel(
       'flutter_notification', // id
@@ -95,7 +92,6 @@ Future<void> main() async {
       // Customize your light theme here
     ),
     home: RepositoryProvider(
-
       create: (context) => ApiProvider(),
       child: SplashScreen(),
     ),

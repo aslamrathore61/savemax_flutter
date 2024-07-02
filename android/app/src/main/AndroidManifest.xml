@@ -42,7 +42,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
                     android:host="savemax.com"
-                    android:scheme="https" />
+                    android:scheme="https"
+                    android:pathPrefix="/"/>
             </intent-filter>
 
         </activity>

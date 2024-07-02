@@ -192,6 +192,7 @@ class _ChildDrawerMenuItemState extends State<ChildDrawerMenuItem> {
 
   @override
   Widget build(BuildContext context) {
+    print('titleName ${widget.title}');
       return InkWell(
       onTap: () => widget.onTap(),
       child: Padding(
@@ -208,11 +209,12 @@ class _ChildDrawerMenuItemState extends State<ChildDrawerMenuItem> {
                         height: 30,
                         fit: BoxFit.contain, // or other fit options
                       )
-                    : SizedBox(
+                    : const SizedBox(
                         width: 0,
                       ),
                 SizedBox(width: 4),
-                Text(
+
+                widget.title != "\$999 For Listing Your home" ? Text(
                   widget.title,
                   textAlign: TextAlign.start,
                   style: TextStyle(
@@ -220,7 +222,37 @@ class _ChildDrawerMenuItemState extends State<ChildDrawerMenuItem> {
                     color: widget.id == widget.selectedLangID ? Colors.red : Colors.black ,
                     fontWeight: FontWeight.normal,
                   ),
-                ),
+                ) : RichText(
+                  text: const TextSpan(
+                    children: [
+                      TextSpan(
+                        text: '\$',
+                        style: TextStyle(
+                          fontSize: 13.0,
+                          color: Colors.black, // Default color for 'aslam'
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                      TextSpan(
+                        text: '999 ',
+                        style: TextStyle(
+                          fontSize: 13.0,
+                          color: Colors.red, // Default color for 'aslam'
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                      TextSpan(
+                        text: 'For Listing Your home',
+                        style: TextStyle(
+                          fontSize: 13.0,
+                          color: Colors.black, // Conditional color for 'rathore'
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                    ],
+                  ),
+                  textAlign: TextAlign.start,
+                )
               ],
             ),
           ],
