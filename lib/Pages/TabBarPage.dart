@@ -795,6 +795,7 @@ class _TabBarPageState extends State<TabBarPage>
                                 print('progress $progress');
                               },
                               onPageStarted: (String url) {
+                                print('onPageStarted $url');
                                 setState(() {
                                   if (url == Config.HOME_URL) {
                                     _tabController.index = 0;
@@ -806,10 +807,16 @@ class _TabBarPageState extends State<TabBarPage>
                                     _tabController.index = 3;
                                   }
                                 });
-                                print('onPageStarted $url');
                               },
                               onPageFinished: (String url) {
                                 print('onPageFinished $url');
+
+                                setState(() {
+                                  if (url.contains('buy')) {
+                                    _tabController.index = 1;
+                                  }
+                                });
+
                               },
                               onWebResourceError: (WebResourceError error) {
                                 print("errorssssss: ${error.errorCode} ${error.description}");
