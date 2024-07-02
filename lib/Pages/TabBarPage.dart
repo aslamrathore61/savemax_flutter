@@ -833,15 +833,18 @@ class _TabBarPageState extends State<TabBarPage>
                                 print('httpResponseError $error');
                               },
                               onNavigationRequest: (NavigationRequest request) {
-                                final url = request.url;
 
-                                // Handle mailto links
-                                if (url.startsWith('mailto:')) {
+
+                                final url = request.url;
+                                print("urlUpdate ${url}");
+
+                                  // Handle mailto links
+                                if (url.startsWith('mailto:') || url.contains('UCsj05jLd-DMLhk_gqpZDGeA')) {
                                   _launchUrl(url);
                                   return NavigationDecision.prevent;
                                 }
 
-                                // Handle social media and store links
+                            // Handle social media and store links
                                 final socialMediaPrefixes = [
                                   'https://play.google.com',
                                   'https://apps.apple.com',
@@ -849,9 +852,9 @@ class _TabBarPageState extends State<TabBarPage>
                                   'https://twitter.com',
                                   'https://www.instagram.com',
                                   'https://www.linkedin.com',
-                                  'https://www.youtube.com',
                                   'https://www.tiktok.com',
                                   'https://savemax.com/blogs/',
+                                  'https://savemax.bamboohr.com/careers',
                                 ];
 
                                 for (var prefix in socialMediaPrefixes) {
@@ -862,6 +865,11 @@ class _TabBarPageState extends State<TabBarPage>
                                 }
 
                                 return NavigationDecision.navigate;
+
+
+
+
+
                               },
                             ),
                           ),
