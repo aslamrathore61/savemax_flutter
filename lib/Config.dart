@@ -56,4 +56,7 @@ class Config {
  static const String imageURL = "imageURL";
 
 
+ static const String UpdateCityName = "UpdateCityName";
+
+
 }

@@ -365,6 +365,13 @@ class _TabBarPageState extends State<TabBarPage>
   }
 
   Future<void> _onTabTapped(int index, String url, String _id) async {
+    String updateurl = url;
+
+    if(url.contains('buy') || url.contains('rent')) {
+     final cityName = await getPrefStringValue(Config.UpdateCityName);
+     url = updateurl.replaceFirst('toronto', cityName);
+    }
+
     currentTabIndex = index;
     if (index == widget.nativeItem.bottom!.length - 1) {
       // Open the drawer if the last tab is selected
@@ -742,8 +749,7 @@ class _TabBarPageState extends State<TabBarPage>
                                           '{"currency": "${url}", "symbol": "${icon}"}';
                                       _webViewController.runJavaScript(
                                           'changeCurrency(`$jsCode`)');
-                                      await setPrefStringValue(
-                                          Config.LANUAGE_ID, id);
+                                      await setPrefStringValue(Config.LANUAGE_ID, id);
                                       await setPrefStringValue(
                                           Config.LANUAGE_URL, url);
                                       // handle
@@ -811,11 +817,19 @@ class _TabBarPageState extends State<TabBarPage>
                               onPageFinished: (String url) {
                                 print('onPageFinished $url');
 
+
+                                String value = "";
                                 setState(() {
                                   if (url.contains('buy')) {
+                                     extractCityName(url);
                                     _tabController.index = 1;
+                                  }else if(url.contains('rent')) {
+                                    extractCityName(url);
                                   }
                                 });
+
+
+                                print('ValueExtract : $value');
 
                               },
                               onWebResourceError: (WebResourceError error) {
@@ -941,6 +955,17 @@ class _TabBarPageState extends State<TabBarPage>
         ],
       ),
     );
+  }
+
+
+  Future<void> extractCityName(String url) async {
+    final uri = Uri.parse(url);
+    final segments = uri.pathSegments;
+    // Assuming the city name is always in the second segment
+    String cityName =  segments[1].replaceAll('-real-estate', '');
+    await setPrefStringValue(Config.UpdateCityName, cityName);
+
+
   }
 
   void javaScriptCall(
