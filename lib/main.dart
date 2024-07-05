@@ -85,6 +85,7 @@ Future<void> main() async {
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   runApp( MaterialApp(
+    debugShowCheckedModeBanner: false,
     themeMode: ThemeMode.light, // Always use light theme
     theme: ThemeData(
       brightness: Brightness.light,

@@ -74,7 +74,7 @@ class ForceUpdateScreen extends StatelessWidget {
                     margin: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0), // Equivalent to @dimen/_8sdp
                     padding: EdgeInsets.all(8.0), // Equivalent to @dimen/_8sdp
                     child: Text(
-                      'Downloading the latest update you will get the latest features, improvements and bug fixes of Save Max App', // Update this to your actual string resource
+                      'Newer, Better & Faster! Update now for improved performance, enhanced security, and exciting new features with the latest app version', // Update this to your actual string resource
                       style: TextStyle(
                         fontSize: 16.0, // Equivalent to @dimen/_16sdp
                         color: Color(0xFF000000), // Equivalent to @color/dark

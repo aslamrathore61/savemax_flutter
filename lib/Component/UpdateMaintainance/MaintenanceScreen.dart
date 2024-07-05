@@ -64,7 +64,7 @@ class MaintenanceScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     Text(
-                      'The app is unable to access the services as the system id down for maintenance!', // Update this to your actual string resource
+                      'We are experiencing a server issue, possibly due to maintenance. Please try again in a few minutes.', // Update this to your actual string resource
                       style: TextStyle(
                         fontSize: 16.0, // Equivalent to @dimen/_16sdp
                         color: Color(0xFF000000), // Equivalent to @color/dark
