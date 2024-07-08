@@ -2,8 +2,10 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+import 'package:location/location.dart';
 import 'package:savemax_flutter/model/user_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Component/UpdateMaintainance/ForceUpdateScreen.dart';
@@ -31,6 +33,24 @@ Future<void> main() async {
 
   FirebaseMessaging messaging = FirebaseMessaging.instance;
 
+
+  Future<void> getLocationInitialTime() async {
+    Location location = Location();
+    bool serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) {
+        return;
+      }
+    }
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+  }
+
+
+
   await messaging.requestPermission(
     alert: true,
     announcement: false,
@@ -40,6 +60,8 @@ Future<void> main() async {
     provisional: false,
     sound: true,
   );
+
+
 
   Future<void> initializeHive() async {
     await Hive.initFlutter();
@@ -51,8 +73,9 @@ Future<void> main() async {
     Hive.registerAdapter(UserInfoAdapter());
   }
 
+  await getLocationInitialTime();
+
   bool result = await InternetConnection().hasInternetAccess;
-  print('hasInternetAccess $result');
 
   if(result) {
     final fcmToken = await messaging.getToken();

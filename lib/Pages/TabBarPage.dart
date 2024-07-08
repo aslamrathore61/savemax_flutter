@@ -451,26 +451,6 @@ class _TabBarPageState extends State<TabBarPage>
         IsInternetConnected = false;
       });
     }
-
-  /*  InternetConnection().onStatusChange.listen((InternetStatus status) {
-      if (!isAppInBackground) {
-        switch (status) {
-          case InternetStatus.connected:
-            setState(() async {
-              print("internetConnected 1 connected");
-              IsInternetConnected = true;
-                CommonLoadRequest(deepLinkingURL, _webViewController, context, "2");
-            });
-            break;
-          case InternetStatus.disconnected:
-            print("internetConnected 2 Notconnected");
-            setState(() {
-              IsInternetConnected = false;
-            });
-            break;
-        }
-      }
-    });*/
   }
 
   Future<void> getSelectedLanguageID() async {
@@ -479,11 +459,6 @@ class _TabBarPageState extends State<TabBarPage>
     print('mSelectedLange, ${mSelectedLanguageURL}');
   }
 
-  /* enum AppIcon {
-  black,
-  gradient,
-  galaxy,
-}*/
   bool canPop = false;
   late double _statusBarHeight;
 
@@ -855,12 +830,15 @@ class _TabBarPageState extends State<TabBarPage>
                               },
                               onNavigationRequest: (NavigationRequest request) {
 
-
                                 final url = request.url;
-                                print("urlUpdate ${url}");
-
                                   // Handle mailto links
                                 if (url.startsWith('mailto:') || url.contains('UCsj05jLd-DMLhk_gqpZDGeA')) {
+                                  _launchUrl(url);
+                                  return NavigationDecision.prevent;
+                                } if(url.contains("https://api.whatsapp.com")) {
+                                  _launchUrl(url);
+                                  return NavigationDecision.prevent;
+                                }else if(url.contains("tel:")) {
                                   _launchUrl(url);
                                   return NavigationDecision.prevent;
                                 }
@@ -964,8 +942,6 @@ class _TabBarPageState extends State<TabBarPage>
     // Assuming the city name is always in the second segment
     String cityName =  segments[1].replaceAll('-real-estate', '');
     await setPrefStringValue(Config.UpdateCityName, cityName);
-
-
   }
 
   void javaScriptCall(
@@ -1052,29 +1028,22 @@ class _TabBarPageState extends State<TabBarPage>
     }
   }
 
-  Future<void> setLatLongToWeb(
-      WebViewController webViewController, BuildContext context) async {
-    print('check 1');
+  Future<void> setLatLongToWeb(WebViewController webViewController, BuildContext context) async {
 
     Location location = Location();
     bool serviceEnabled = await location.serviceEnabled();
     if (!serviceEnabled) {
-      print('check 2');
       serviceEnabled = await location.requestService();
       if (!serviceEnabled) {
-        print('check 3');
-
         return;
       }
     }
 
     LocationPermission permission = await Geolocator.checkPermission();
-    print('permissionStatus ${permission}');
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
-      print('check 4');
     } else if (permission == LocationPermission.deniedForever) {
-      print('check 5');
+
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
