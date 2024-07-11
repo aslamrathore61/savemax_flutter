@@ -235,20 +235,29 @@ class _TabBarPageState extends State<TabBarPage>
     await platform.invokeMethod('AppIconChange', message);
   }
 
+
+
   @override
   void deactivate() {
-    // Cleanup logic here
-    print('deactivate');
-
+ //   print('deactivate');
     super.deactivate();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    print('didChangeDependencies');
+  //  print('didChangeDependencies');
 
-    // Handle dependencies here
+    if (Theme.of(context).platform == TargetPlatform.iOS) {
+      _webViewController.currentUrl().then((currentUrl) {
+        if(currentUrl != null && currentUrl.contains('buy')) {
+          extractCityName(currentUrl);
+          _tabController.index = 1;
+        }
+      });
+    }
+
+
   }
 
   void _rebuildWidget() {
@@ -369,6 +378,8 @@ class _TabBarPageState extends State<TabBarPage>
 
     if(url.contains('buy') || url.contains('rent')) {
      final cityName = await getPrefStringValue(Config.UpdateCityName);
+     print('urlCityName $cityName');
+
      url = updateurl.replaceFirst('toronto', cityName);
     }
 
@@ -831,6 +842,7 @@ class _TabBarPageState extends State<TabBarPage>
                               onNavigationRequest: (NavigationRequest request) {
 
                                 final url = request.url;
+                                print('onNavigationRequest ${request.url}');
                                   // Handle mailto links
                                 if (url.startsWith('mailto:') || url.contains('UCsj05jLd-DMLhk_gqpZDGeA')) {
                                   _launchUrl(url);
@@ -937,6 +949,7 @@ class _TabBarPageState extends State<TabBarPage>
 
 
   Future<void> extractCityName(String url) async {
+    print('extractCityName : $url');
     final uri = Uri.parse(url);
     final segments = uri.pathSegments;
     // Assuming the city name is always in the second segment
