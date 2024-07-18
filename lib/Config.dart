@@ -2,8 +2,8 @@ class Config {
 
 
   // static const String HOST = "syncmob.savemax.com";
- static const String HOME_URL = "https://savemax.com/";
- // static const String HOME_URL = "https://uat1.savemax.com/";
+ // static const String HOME_URL = "https://savemax.com/";
+ static const String HOME_URL = "https://uat1.savemax.com/";
  //  static const String HOME_URL = "https://flutter.dev/";
 
 

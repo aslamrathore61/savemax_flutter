@@ -256,8 +256,6 @@ class _TabBarPageState extends State<TabBarPage>
         }
       });
     }
-
-
   }
 
   void _rebuildWidget() {
@@ -374,6 +372,7 @@ class _TabBarPageState extends State<TabBarPage>
   }
 
   Future<void> _onTabTapped(int index, String url, String _id) async {
+    print('idtest $_id');
     String updateurl = url;
 
     if(url.contains('buy') || url.contains('rent')) {
@@ -770,8 +769,9 @@ class _TabBarPageState extends State<TabBarPage>
                       ),
                     )
                   : Container(
-                      color: Colors.white,
-                      margin: EdgeInsets.only(top: _statusBarHeight),
+                      color: Color(0xe8f3f4f8),
+                      padding: EdgeInsets.only(top: _statusBarHeight),
+                     // margin: EdgeInsets.only(top: _statusBarHeight),
                       child: WebViewWidget(
                         controller: _webViewController
                           //  ..loadRequest(Uri.parse(deepLinkingURL))
@@ -1029,7 +1029,10 @@ class _TabBarPageState extends State<TabBarPage>
       // webViewController.runJavaScript('getLogout(`$jsCode`)');
     } else if (message == "ProvideProfileImageFormData") {
       print('ProvideProfileImageFormData');
-      showOptions();
+      showOptions("profileImage");
+    } else if (message == "ProvideListingImageFormData") {
+      print('ProvideListingImageFormData');
+      showOptions("ListingImage");
     } else if (message == "GenerateFCMToken") {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? fcmToken = prefs.getString('fcmToken');
@@ -1125,7 +1128,7 @@ class _TabBarPageState extends State<TabBarPage>
   }
 
   //Show options to get image from camera or gallery
-  Future showOptions() async {
+  Future showOptions(String imageType) async {
     showCupertinoModalPopup(
       context: context,
       builder: (context) => CupertinoActionSheet(
@@ -1147,7 +1150,7 @@ class _TabBarPageState extends State<TabBarPage>
                   deviceInfo.version.sdkInt <= 32) {
                 var permissionStatus = await Permission.storage.request();
                 if (permissionStatus.isGranted) {
-                  getImageFromGallery();
+                  getImageFromGallery(imageType);
                 } else if (permissionStatus.isPermanentlyDenied) {
                   showPermissionSettingsDialog(context,
                       'Please enable storage permission in app settings to use this feature.');
@@ -1155,7 +1158,7 @@ class _TabBarPageState extends State<TabBarPage>
               } else {
                 var permissionStatus = await Permission.photos.request();
                 if (permissionStatus.isGranted) {
-                  getImageFromGallery();
+                  getImageFromGallery(imageType);
                 } else if (permissionStatus.isPermanentlyDenied) {
                   showPermissionSettingsDialog(context,
                       'Please enable storage permission in app settings to use this feature.');
@@ -1172,7 +1175,7 @@ class _TabBarPageState extends State<TabBarPage>
 
               if (permissionStatus.isGranted) {
                 // get image from camera
-                getImageFromCamera();
+                getImageFromCamera(imageType);
               } else if (permissionStatus.isPermanentlyDenied) {
                 showPermissionSettingsDialog(context,
                     'Please enable storage permission in app settings to use this feature.');
@@ -1185,24 +1188,24 @@ class _TabBarPageState extends State<TabBarPage>
   }
 
   //Image Picker function to get image from gallery
-  Future getImageFromGallery() async {
+  Future getImageFromGallery(String imageType) async {
     await picker
         .pickImage(source: ImageSource.gallery, imageQuality: 25)
         .then((value) => {
-              if (value != null) {cropImageCall(File(value.path))}
+              if (value != null) {cropImageCall(File(value.path),imageType)}
             });
   }
 
   //Image Picker function to get image from camera
-  Future getImageFromCamera() async {
+  Future getImageFromCamera(String imageType) async {
     await picker
         .pickImage(source: ImageSource.camera, imageQuality: 25)
         .then((value) async => {
-              if (value != null) {cropImageCall(File(value.path))}
+              if (value != null) {cropImageCall(File(value.path),imageType)}
             });
   }
 
-  cropImageCall(File imgFile) async {
+  cropImageCall(File imgFile,String imageType) async {
     String? croppedImagePath = await cropImage(imgFile);
     print("croppedImagePath $croppedImagePath");
     File file = File('$croppedImagePath');
@@ -1210,10 +1213,10 @@ class _TabBarPageState extends State<TabBarPage>
       isLoading = true;
     });
     // Read the file at the specified path
-    uploadImage(file);
+    uploadImage(file,imageType);
   }
 
-  Future<void> uploadImage(File imageFile) async {
+  Future<void> uploadImage(File imageFile,String imageType) async {
     final dio = Dio();
     const url = 'https://api.savemax.com/imageservice/uploadMultipleFiles';
 
@@ -1235,7 +1238,13 @@ class _TabBarPageState extends State<TabBarPage>
         setState(() {
           isLoading = false;
         });
-        _webViewController.runJavaScript('getFileBytesData(`$responseData`)');
+
+        if(imageType == "profileImage") {
+          _webViewController.runJavaScript('getFileBytesData(`$responseData`)');
+        }else {
+          _webViewController.runJavaScript('getFileBytesDataListing(`$responseData`)');
+
+        }
       } else {
         print('Image upload failed: ${response.statusCode}');
       }

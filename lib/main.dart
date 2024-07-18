@@ -82,6 +82,7 @@ Future<void> main() async {
     final fcmToken = await messaging.getToken();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('fcmToken', '$fcmToken');
+    print('tokenForTest $fcmToken');
   }
 
   channel = const AndroidNotificationChannel(
@@ -113,6 +114,9 @@ Future<void> main() async {
     DeviceOrientation.portraitDown
   ]);
 
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
+    statusBarColor: Colors.yellow, // Set the status bar color to yellow
+  ));
 
   runApp( MaterialApp(
     debugShowCheckedModeBanner: false,
@@ -122,7 +126,11 @@ Future<void> main() async {
       fontFamily: 'Poppins', // Specify your custom font
       // Customize your light theme here
     ),
+
+
     home: RepositoryProvider(
+
+
       create: (context) => ApiProvider(),
       child: SplashScreen(),
     ),
