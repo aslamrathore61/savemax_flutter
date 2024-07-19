@@ -185,7 +185,7 @@ class _TabBarPageState extends State<TabBarPage>
 
   Future<void> initUniLinks() async {
     try {
-       _initialLink = (await getInitialLink())!;
+      _initialLink = (await getInitialLink())!;
       if (_initialLink != null && IsInternetConnected) {
         // Handle the initial link here
         deepLinkingURL = _initialLink;
@@ -235,22 +235,20 @@ class _TabBarPageState extends State<TabBarPage>
     await platform.invokeMethod('AppIconChange', message);
   }
 
-
-
   @override
   void deactivate() {
- //   print('deactivate');
+    //   print('deactivate');
     super.deactivate();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-  //  print('didChangeDependencies');
+    //  print('didChangeDependencies');
 
     if (Theme.of(context).platform == TargetPlatform.iOS) {
       _webViewController.currentUrl().then((currentUrl) {
-        if(currentUrl != null && currentUrl.contains('buy')) {
+        if (currentUrl != null && currentUrl.contains('buy')) {
           extractCityName(currentUrl);
           _tabController.index = 1;
         }
@@ -375,11 +373,11 @@ class _TabBarPageState extends State<TabBarPage>
     print('idtest $_id');
     String updateurl = url;
 
-    if(url.contains('buy') || url.contains('rent')) {
-     final cityName = await getPrefStringValue(Config.UpdateCityName);
-     print('urlCityName $cityName');
+    if (url.contains('buy') || url.contains('rent')) {
+      final cityName = await getPrefStringValue(Config.UpdateCityName);
+      print('urlCityName $cityName');
 
-     url = updateurl.replaceFirst('toronto', cityName);
+      url = updateurl.replaceFirst('toronto', cityName);
     }
 
     currentTabIndex = index;
@@ -420,7 +418,6 @@ class _TabBarPageState extends State<TabBarPage>
             CommonLoadRequest(deepLinkingURL, _webViewController, context, "4");
           }
         });
-
       } else {
         List<String> redirectwihtToken = [
           Config.preConstruction,
@@ -445,17 +442,16 @@ class _TabBarPageState extends State<TabBarPage>
   }
 
   Future<void> _checkInitialConnectivity() async {
-
     bool result = await InternetConnection().hasInternetAccess;
     print('hasInternetAccess $result');
 
-    if(result) {
+    if (result) {
       setState(() async {
         print("internetConnected 1 connected");
         IsInternetConnected = true;
         CommonLoadRequest(deepLinkingURL, _webViewController, context, "2");
       });
-    }else {
+    } else {
       print("internetConnected 2 Notconnected");
       setState(() {
         IsInternetConnected = false;
@@ -734,7 +730,8 @@ class _TabBarPageState extends State<TabBarPage>
                                           '{"currency": "${url}", "symbol": "${icon}"}';
                                       _webViewController.runJavaScript(
                                           'changeCurrency(`$jsCode`)');
-                                      await setPrefStringValue(Config.LANUAGE_ID, id);
+                                      await setPrefStringValue(
+                                          Config.LANUAGE_ID, id);
                                       await setPrefStringValue(
                                           Config.LANUAGE_URL, url);
                                       // handle
@@ -771,7 +768,7 @@ class _TabBarPageState extends State<TabBarPage>
                   : Container(
                       color: Color(0xe8f3f4f8),
                       padding: EdgeInsets.only(top: _statusBarHeight),
-                     // margin: EdgeInsets.only(top: _statusBarHeight),
+                      // margin: EdgeInsets.only(top: _statusBarHeight),
                       child: WebViewWidget(
                         controller: _webViewController
                           //  ..loadRequest(Uri.parse(deepLinkingURL))
@@ -803,28 +800,26 @@ class _TabBarPageState extends State<TabBarPage>
                               onPageFinished: (String url) {
                                 print('onPageFinished $url');
 
-
                                 String value = "";
                                 setState(() {
                                   if (url.contains('buy')) {
-                                     extractCityName(url);
+                                    extractCityName(url);
                                     _tabController.index = 1;
-                                  }else if(url.contains('rent')) {
+                                  } else if (url.contains('rent')) {
                                     extractCityName(url);
                                   }
                                 });
 
-
                                 print('ValueExtract : $value');
-
                               },
                               onWebResourceError: (WebResourceError error) {
-                                print("errorssssss: ${error.errorCode} ${error.description}");
+                                print(
+                                    "errorssssss: ${error.errorCode} ${error.description}");
 
-                                if(error.errorCode == -2){
-                                      setState(() {
-                                        IsInternetConnected = false;
-                                      });
+                                if (error.errorCode == -2) {
+                                  setState(() {
+                                    IsInternetConnected = false;
+                                  });
                                 }
 
                                 /* print('onWebResourceError ${error.errorType} ${error.errorCode} ${error.description}');
@@ -840,22 +835,23 @@ class _TabBarPageState extends State<TabBarPage>
                                 print('httpResponseError $error');
                               },
                               onNavigationRequest: (NavigationRequest request) {
-
                                 final url = request.url;
                                 print('onNavigationRequest ${request.url}');
-                                  // Handle mailto links
-                                if (url.startsWith('mailto:') || url.contains('UCsj05jLd-DMLhk_gqpZDGeA')) {
+                                // Handle mailto links
+                                if (url.startsWith('mailto:') ||
+                                    url.contains('UCsj05jLd-DMLhk_gqpZDGeA')) {
                                   _launchUrl(url);
                                   return NavigationDecision.prevent;
-                                } if(url.contains("https://api.whatsapp.com")) {
+                                }
+                                if (url.contains("https://api.whatsapp.com")) {
                                   _launchUrl(url);
                                   return NavigationDecision.prevent;
-                                }else if(url.contains("tel:")) {
+                                } else if (url.contains("tel:")) {
                                   _launchUrl(url);
                                   return NavigationDecision.prevent;
                                 }
 
-                            // Handle social media and store links
+                                // Handle social media and store links
                                 final socialMediaPrefixes = [
                                   'https://play.google.com',
                                   'https://apps.apple.com',
@@ -863,8 +859,10 @@ class _TabBarPageState extends State<TabBarPage>
                                   'https://twitter.com',
                                   'https://www.instagram.com',
                                   'https://www.linkedin.com',
+                                  'https://ca.linkedin.com',
                                   'https://www.tiktok.com',
                                   'https://savemax.com/blogs/',
+                                  'https://risewithraman.com/',
                                   'https://savemax.bamboohr.com/careers',
                                 ];
 
@@ -876,11 +874,6 @@ class _TabBarPageState extends State<TabBarPage>
                                 }
 
                                 return NavigationDecision.navigate;
-
-
-
-
-
                               },
                             ),
                           ),
@@ -947,13 +940,12 @@ class _TabBarPageState extends State<TabBarPage>
     );
   }
 
-
   Future<void> extractCityName(String url) async {
     print('extractCityName : $url');
     final uri = Uri.parse(url);
     final segments = uri.pathSegments;
     // Assuming the city name is always in the second segment
-    String cityName =  segments[1].replaceAll('-real-estate', '');
+    String cityName = segments[1].replaceAll('-real-estate', '');
     await setPrefStringValue(Config.UpdateCityName, cityName);
   }
 
@@ -1044,8 +1036,8 @@ class _TabBarPageState extends State<TabBarPage>
     }
   }
 
-  Future<void> setLatLongToWeb(WebViewController webViewController, BuildContext context) async {
-
+  Future<void> setLatLongToWeb(
+      WebViewController webViewController, BuildContext context) async {
     Location location = Location();
     bool serviceEnabled = await location.serviceEnabled();
     if (!serviceEnabled) {
@@ -1056,10 +1048,10 @@ class _TabBarPageState extends State<TabBarPage>
     }
 
     LocationPermission permission = await Geolocator.checkPermission();
+
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     } else if (permission == LocationPermission.deniedForever) {
-
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -1085,22 +1077,24 @@ class _TabBarPageState extends State<TabBarPage>
         ),
       );
       return;
-    } else if (permission != LocationPermission.whileInUse && permission != LocationPermission.always) {
+    } else if (permission != LocationPermission.whileInUse &&
+        permission != LocationPermission.always) {
       print('check 6');
       return;
     }
     Position? position = await Geolocator.getLastKnownPosition();
 
-    print('CurrentLatLong - Latitude: ${position?.latitude}, Longitude: ${position?.longitude}');
+    print(
+        'CurrentLatLong - Latitude: ${position?.latitude}, Longitude: ${position?.longitude}');
 
     if (position?.latitude != null && position?.longitude != null) {
-      String jsCode = '{"latitude": "${position?.latitude}", "longitude": "${position?.longitude}"}';
+      String jsCode =
+          '{"latitude": "${position?.latitude}", "longitude": "${position?.longitude}"}';
       webViewController.runJavaScript('getLatLong(`$jsCode`)');
     }
   }
 
   Future<void> _exitApp(BuildContext context) async {
-
     String CurrentUrl = "";
     _webViewController.currentUrl().then((currentUrl) {
       CurrentUrl = currentUrl!;
@@ -1112,7 +1106,7 @@ class _TabBarPageState extends State<TabBarPage>
       setState(() {
         canPop = false;
       });
-    }else if (_initialLink == CurrentUrl) {
+    } else if (_initialLink == CurrentUrl) {
       SystemNavigator.pop();
     } else {
       _webViewController.currentUrl().then((currentUrl) {
@@ -1129,6 +1123,13 @@ class _TabBarPageState extends State<TabBarPage>
 
   //Show options to get image from camera or gallery
   Future showOptions(String imageType) async {
+
+    AndroidDeviceInfo? deviceInfo;
+
+    if (Platform.isAndroid) {
+      deviceInfo = await DeviceInfoPlugin().androidInfo;
+    }
+
     showCupertinoModalPopup(
       context: context,
       builder: (context) => CupertinoActionSheet(
@@ -1139,15 +1140,9 @@ class _TabBarPageState extends State<TabBarPage>
               // close the options modal
               Navigator.of(context).pop();
 
-              AndroidDeviceInfo? deviceInfo;
 
-              if (Platform.isAndroid) {
-                deviceInfo = await DeviceInfoPlugin().androidInfo;
-              }
 
-              if (Platform.isAndroid &&
-                  deviceInfo != null &&
-                  deviceInfo.version.sdkInt <= 32) {
+              if (Platform.isAndroid && deviceInfo != null && deviceInfo.version.sdkInt <= 32) {
                 var permissionStatus = await Permission.storage.request();
                 if (permissionStatus.isGranted) {
                   getImageFromGallery(imageType);
@@ -1156,12 +1151,12 @@ class _TabBarPageState extends State<TabBarPage>
                       'Please enable storage permission in app settings to use this feature.');
                 }
               } else {
-                var permissionStatus = await Permission.photos.request();
-                if (permissionStatus.isGranted) {
-                  getImageFromGallery(imageType);
-                } else if (permissionStatus.isPermanentlyDenied) {
+                final permissionStatus = await Permission.photos.status;
+                if (permissionStatus.isPermanentlyDenied || permissionStatus.isDenied) {
                   showPermissionSettingsDialog(context,
                       'Please enable storage permission in app settings to use this feature.');
+                } else {
+                  getImageFromGallery(imageType);
                 }
               }
             },
@@ -1171,15 +1166,30 @@ class _TabBarPageState extends State<TabBarPage>
             onPressed: () async {
               // close the options modal
               Navigator.of(context).pop();
-              var permissionStatus = await Permission.camera.request();
 
-              if (permissionStatus.isGranted) {
-                // get image from camera
-                getImageFromCamera(imageType);
-              } else if (permissionStatus.isPermanentlyDenied) {
-                showPermissionSettingsDialog(context,
-                    'Please enable storage permission in app settings to use this feature.');
+
+
+              if (Platform.isAndroid && deviceInfo != null && deviceInfo.version.sdkInt <= 32) {
+                var permissionStatus = await Permission.camera.request();
+
+                if (permissionStatus.isGranted) {
+                  // get image from camera
+                  getImageFromCamera(imageType);
+                } else if (permissionStatus.isPermanentlyDenied) {
+                  showPermissionSettingsDialog(context,
+                      'Please enable storage permission in app settings to use this feature.');
+                }
+              } else {
+                final permissionStatus = await Permission.camera.status;
+                if (permissionStatus.isPermanentlyDenied ||
+                    permissionStatus.isDenied) {
+                  showPermissionSettingsDialog(context,
+                      'Please enable storage permission in app settings to use this feature.');
+                } else {
+                  getImageFromCamera(imageType);
+                }
               }
+
             },
           ),
         ],
@@ -1192,7 +1202,7 @@ class _TabBarPageState extends State<TabBarPage>
     await picker
         .pickImage(source: ImageSource.gallery, imageQuality: 25)
         .then((value) => {
-              if (value != null) {cropImageCall(File(value.path),imageType)}
+              if (value != null) {cropImageCall(File(value.path), imageType)}
             });
   }
 
@@ -1201,11 +1211,11 @@ class _TabBarPageState extends State<TabBarPage>
     await picker
         .pickImage(source: ImageSource.camera, imageQuality: 25)
         .then((value) async => {
-              if (value != null) {cropImageCall(File(value.path),imageType)}
+              if (value != null) {cropImageCall(File(value.path), imageType)}
             });
   }
 
-  cropImageCall(File imgFile,String imageType) async {
+  cropImageCall(File imgFile, String imageType) async {
     String? croppedImagePath = await cropImage(imgFile);
     print("croppedImagePath $croppedImagePath");
     File file = File('$croppedImagePath');
@@ -1213,10 +1223,10 @@ class _TabBarPageState extends State<TabBarPage>
       isLoading = true;
     });
     // Read the file at the specified path
-    uploadImage(file,imageType);
+    uploadImage(file, imageType);
   }
 
-  Future<void> uploadImage(File imageFile,String imageType) async {
+  Future<void> uploadImage(File imageFile, String imageType) async {
     final dio = Dio();
     const url = 'https://api.savemax.com/imageservice/uploadMultipleFiles';
 
@@ -1239,11 +1249,11 @@ class _TabBarPageState extends State<TabBarPage>
           isLoading = false;
         });
 
-        if(imageType == "profileImage") {
+        if (imageType == "profileImage") {
           _webViewController.runJavaScript('getFileBytesData(`$responseData`)');
-        }else {
-          _webViewController.runJavaScript('getFileBytesDataListing(`$responseData`)');
-
+        } else {
+          _webViewController
+              .runJavaScript('getFileBytesDataListing(`$responseData`)');
         }
       } else {
         print('Image upload failed: ${response.statusCode}');

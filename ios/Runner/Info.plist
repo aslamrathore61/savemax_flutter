@@ -102,8 +102,12 @@
     <false/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
-	 <key>NSLocationWhenInUseUsageDescription</key>
-     <string>Need location permission for area project listing</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Need location permission for area project listing</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need access to your photo library to select photos.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>We need access to your camera to take photos.</string>
 	<key>CFBundleDisplayName</key>
 	<string>Savemax Flutter</string>
 	<key>CFBundleExecutable</key>
@@ -116,7 +120,6 @@
 	<string>savemax_flutter</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
-
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
