@@ -1197,13 +1197,32 @@ class _TabBarPageState extends State<TabBarPage>
     );
   }
 
+
   //Image Picker function to get image from gallery
+
+  List<XFile> images = [];
+
   Future getImageFromGallery(String imageType) async {
-    await picker
-        .pickImage(source: ImageSource.gallery, imageQuality: 25)
-        .then((value) => {
-              if (value != null) {cropImageCall(File(value.path), imageType)}
-            });
+
+    if(imageType == "profileImage") {
+      await picker.pickImage(source: ImageSource.gallery, imageQuality: 25)
+          .then((value) => {
+        if (value != null) {cropImageCall(File(value.path),imageType)}
+      });
+    }else {
+      final List<XFile>? selectedImages = await picker.pickMultiImage(imageQuality: 25);
+      if (selectedImages != null) {
+        setState(() {
+          images = selectedImages;
+        });
+        setState(() {
+          isLoading = true;
+        });
+        await uploadImages(images, "imageType"); // Use appropriate imageType
+      }
+
+    }
+
   }
 
   //Image Picker function to get image from camera
@@ -1211,32 +1230,35 @@ class _TabBarPageState extends State<TabBarPage>
     await picker
         .pickImage(source: ImageSource.camera, imageQuality: 25)
         .then((value) async => {
-              if (value != null) {cropImageCall(File(value.path), imageType)}
-            });
+      if (value != null) {cropImageCall(File(value.path),imageType)}
+    });
   }
 
-  cropImageCall(File imgFile, String imageType) async {
+  List<XFile> croppedImageXFile = [];
+  cropImageCall(File imgFile,String imageType) async {
     String? croppedImagePath = await cropImage(imgFile);
     print("croppedImagePath $croppedImagePath");
-    File file = File('$croppedImagePath');
+    croppedImageXFile.add( XFile(croppedImagePath!));
     setState(() {
       isLoading = true;
     });
     // Read the file at the specified path
-    uploadImage(file, imageType);
+    uploadImages(croppedImageXFile,imageType);
   }
 
-  Future<void> uploadImage(File imageFile, String imageType) async {
+  Future<void> uploadImages(List<XFile> imageFiles, String imageType) async {
     final dio = Dio();
     const url = 'https://api.savemax.com/imageservice/uploadMultipleFiles';
 
-    // Generate the current date and time in the desired format
-    String formattedDate =
-        DateFormat('yyyy-MM-dd HHmmss').format(DateTime.now());
-    String name = 'properties_$formattedDate.png';
+    List<MultipartFile> files = [];
+    for (XFile image in imageFiles) {
+      String formattedDate = DateFormat('yyyy-MM-dd HHmmss').format(DateTime.now());
+      String name = 'properties_$formattedDate.png';
+      files.add(await MultipartFile.fromFile(image.path, filename: name));
+    }
 
     FormData formData = FormData.fromMap({
-      'files': await MultipartFile.fromFile(imageFile.path, filename: name),
+      'files': files,
     });
 
     try {
@@ -1252,8 +1274,7 @@ class _TabBarPageState extends State<TabBarPage>
         if (imageType == "profileImage") {
           _webViewController.runJavaScript('getFileBytesData(`$responseData`)');
         } else {
-          _webViewController
-              .runJavaScript('getFileBytesDataListing(`$responseData`)');
+          _webViewController.runJavaScript('getFileBytesDataListing(`$responseData`)');
         }
       } else {
         print('Image upload failed: ${response.statusCode}');
@@ -1262,6 +1283,8 @@ class _TabBarPageState extends State<TabBarPage>
       print('Error occurred: $e');
     }
   }
+
+
 
   void showPermissionSettingsDialog(BuildContext context, String msg) {
     showDialog(

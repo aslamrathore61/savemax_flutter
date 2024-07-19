@@ -12,11 +12,7 @@ import '../model/native_item.dart';
 class ApiProvider {
   final Dio _dio = Dio();
 
-  // production
-  final String _baseUrl = 'https://api.savemax.com/userservice/api/configs/';
 
-  // uat
- // final String _baseUrl = 'https://uatapi.savemax.com/userservice/api/configs/';
 
   ApiProvider() {
     // Add interceptors for logging and error handling
@@ -107,7 +103,7 @@ class ApiProvider {
 
     try {
      Response response = await _dio.get(
-        '${_baseUrl}getSaveMaxMenuItems',
+        '${Config.menuUrl}getSaveMaxMenuItems',
         queryParameters: {'requestAppVersion': menuVersion},
       );
 
@@ -141,7 +137,7 @@ class ApiProvider {
 
         var requestAppVersion = response.data['responseAppVersion'];
         print('requestAppVersion22222 ${requestAppVersion}');
-        print('BottomMenuBottomMenu ${bottomMenu}');
+        print('BottomMenuBottomMenu ${sideMenu}');
 
         if (bottomMenu == null && sideMenu == null) {
           return NativeItem(bottom: [], side: [], profile: []);

@@ -1,13 +1,19 @@
 class Config {
 
 
-  // static const String HOST = "syncmob.savemax.com";
- static const String HOME_URL = "https://savemax.com/";
+ // production
+ // final String menuUrl = 'https://api.savemax.com/userservice/api/configs/';
+ // static const String HOME_URL = "https://savemax.com/";
+
+ // uat
+ static const String menuUrl = 'https://uatapi.savemax.com/userservice/api/configs/';
  // static const String HOME_URL = "https://uat1.savemax.com/";
- //  static const String HOME_URL = "https://flutter.dev/";
+ static const String HOME_URL = "http://192.168.1.98:3000/";
 
 
-  //profile menu id
+
+
+ //profile menu id
   static const String View_Profile = "db3579dffc5b4fb984143fa55e411399";
   static const String Agent_Dashboard = "db3579dffc5b4fb98414rrr55e411312";
   static const String Dashboard = "db6565dffc5b4fb98414rrr55e411312";
