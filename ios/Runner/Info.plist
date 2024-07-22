@@ -106,6 +106,8 @@
 	<string>Need location permission for area project listing</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We need access to your photo library to select photos.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+    <string>We need access to your photo library to add photos.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>We need access to your camera to take photos.</string>
 	<key>CFBundleDisplayName</key>

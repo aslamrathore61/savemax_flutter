@@ -12,6 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hive/hive.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
@@ -94,7 +95,7 @@ class _TabBarPageState extends State<TabBarPage>
 
       if (notification != null && android != null && !kIsWeb) {
         String action = jsonEncode(message.data);
-        print('action ${action}');
+        print('action $action');
 
         flutterLocalNotificationsPlugin!.show(
             notification.hashCode,
@@ -174,7 +175,7 @@ class _TabBarPageState extends State<TabBarPage>
 
   void CommonLoadRequest(String url, WebViewController webViewController,
       BuildContext _context, String debugValue) {
-    print('debugValue : ${debugValue}');
+    print('debugValue : $debugValue');
 
     if (IsInternetConnected) {
       javaScriptCall(webViewController, _context);
@@ -385,7 +386,7 @@ class _TabBarPageState extends State<TabBarPage>
       // Open the drawer if the last tab is selected
       _scaffoldKey.currentState?.openDrawer();
 
-      print('checkindext ${index}');
+      print('checkindext $index');
       // Set the tab controller index to the previous tab
       _tabController.index = _tabController.previousIndex;
     } else {
@@ -462,7 +463,7 @@ class _TabBarPageState extends State<TabBarPage>
   Future<void> getSelectedLanguageID() async {
     mSelectedLanguageID = await getPrefStringValue(Config.LANUAGE_ID);
     mSelectedLanguageURL = await getPrefStringValue(Config.LANUAGE_URL);
-    print('mSelectedLange, ${mSelectedLanguageURL}');
+    print('mSelectedLange, $mSelectedLanguageURL');
   }
 
   bool canPop = false;
@@ -705,7 +706,7 @@ class _TabBarPageState extends State<TabBarPage>
                                   title: widget.nativeItem.side![index].title!,
                                   onTap: (String url, String id,
                                       String icon) async {
-                                    print('parentURL ${url} ParentID ${id}');
+                                    print('parentURL $url ParentID $id');
 
                                     int _index = 0;
                                     int foundIndex = -1;
@@ -722,12 +723,12 @@ class _TabBarPageState extends State<TabBarPage>
                                         Config.CURRENCY_ID) {
                                       print(
                                           'LanguageIDdd ${widget.nativeItem.side![index].id!}');
-                                      print('LanguageID ${url}');
+                                      print('LanguageID $url');
                                       mSelectedLanguageID = id;
                                       mSelectedLanguageURL = url;
 
                                       String jsCode =
-                                          '{"currency": "${url}", "symbol": "${icon}"}';
+                                          '{"currency": "$url", "symbol": "$icon"}';
                                       _webViewController.runJavaScript(
                                           'changeCurrency(`$jsCode`)');
                                       await setPrefStringValue(
@@ -743,8 +744,17 @@ class _TabBarPageState extends State<TabBarPage>
                                     } else {
                                       print('parentURL  2222');
 
-                                      _onTabTapped(0, url, id);
-                                      _tabController.index = 4;
+                                      if (id == Config.inAppLocaationID) {
+                                        if (Platform.isAndroid) {
+                                          _launchUrl(url);
+                                        } else {
+                                          _launchUrl(
+                                              'https://apps.apple.com/in/app/save-max-real-estate-india/id6451472373');
+                                        }
+                                      } else {
+                                        _onTabTapped(0, url, id);
+                                        _tabController.index = 4;
+                                      }
                                     }
 
                                     _scaffoldKey.currentState?.closeDrawer();
@@ -1014,7 +1024,7 @@ class _TabBarPageState extends State<TabBarPage>
       final bundleNumber = packageInfo.buildNumber;
       print('versionNumber $versionNumber : bundleNumber $bundleNumber');
       String jsCode =
-          '{"versionNumber": "${versionNumber}", "bundleNumber": "${bundleNumber}"}';
+          '{"versionNumber": "$versionNumber", "bundleNumber": "$bundleNumber"}';
       webViewController.runJavaScript('getVersion(`$jsCode`)');
 
       //  String jsCode = '{"logoutvalue"}';
@@ -1123,127 +1133,231 @@ class _TabBarPageState extends State<TabBarPage>
 
   //Show options to get image from camera or gallery
   Future showOptions(String imageType) async {
-
     AndroidDeviceInfo? deviceInfo;
 
     if (Platform.isAndroid) {
       deviceInfo = await DeviceInfoPlugin().androidInfo;
     }
 
-    showCupertinoModalPopup(
+    showModalBottomSheet(
       context: context,
-      builder: (context) => CupertinoActionSheet(
-        actions: [
-          CupertinoActionSheetAction(
-            child: Text('Photo Gallery'),
-            onPressed: () async {
-              // close the options modal
-              Navigator.of(context).pop();
+      builder: (BuildContext context) {
+        return Container(
+          margin: EdgeInsets.only(bottom: 15),
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                leading: Icon(Icons.photo_library),
+                title: Text('Photo Library'),
+                onTap: () async {
+                  // close the options modal
+                  Navigator.of(context).pop();
+
+                  if (Platform.isAndroid && deviceInfo != null && deviceInfo.version.sdkInt <= 32) {
+                    var permissionStatus = await Permission.storage.request();
+                    if (permissionStatus.isGranted) {
+                      getImageFromGallery(imageType);
+                    } else if (permissionStatus.isPermanentlyDenied) {
+                      showPermissionSettingsDialog(context,
+                          'Please enable storage permission in app settings to use this feature.');
+                    }
+                  } else {
+
+                    getImageFromGallery(imageType);
+                  }
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.camera_alt),
+                title: Text('Take Photo'),
+                onTap: () async {
+                  // close the options modal
+                  Navigator.of(context).pop();
 
 
 
-              if (Platform.isAndroid && deviceInfo != null && deviceInfo.version.sdkInt <= 32) {
-                var permissionStatus = await Permission.storage.request();
-                if (permissionStatus.isGranted) {
-                  getImageFromGallery(imageType);
-                } else if (permissionStatus.isPermanentlyDenied) {
-                  showPermissionSettingsDialog(context,
-                      'Please enable storage permission in app settings to use this feature.');
-                }
-              } else {
-                final permissionStatus = await Permission.photos.status;
-                if (permissionStatus.isPermanentlyDenied || permissionStatus.isDenied) {
-                  showPermissionSettingsDialog(context,
-                      'Please enable storage permission in app settings to use this feature.');
-                } else {
-                  getImageFromGallery(imageType);
-                }
-              }
-            },
+                  if (Platform.isAndroid && deviceInfo != null && deviceInfo.version.sdkInt <= 32) {
+                    var permissionStatus = await Permission.camera.request();
+
+                    if (permissionStatus.isGranted) {
+                      // get image from camera
+                      getImageFromCamera(imageType);
+                    } else if (permissionStatus.isPermanentlyDenied) {
+                      showPermissionSettingsDialog(context,
+                          'Please enable storage permission in app settings to use this feature.');
+                    }
+                  } else {
+                    final permissionStatus = await Permission.camera.status;
+                    if (permissionStatus.isPermanentlyDenied) {
+                      showPermissionSettingsDialog(context,
+                          'Please enable storage permission in app settings to use this feature.');
+                    } else {
+                      getImageFromCamera(imageType);
+                    }
+                  }
+                },
+              )
+            ],
           ),
-          CupertinoActionSheetAction(
-            child: Text('Camera'),
-            onPressed: () async {
-              // close the options modal
-              Navigator.of(context).pop();
-
-
-
-              if (Platform.isAndroid && deviceInfo != null && deviceInfo.version.sdkInt <= 32) {
-                var permissionStatus = await Permission.camera.request();
-
-                if (permissionStatus.isGranted) {
-                  // get image from camera
-                  getImageFromCamera(imageType);
-                } else if (permissionStatus.isPermanentlyDenied) {
-                  showPermissionSettingsDialog(context,
-                      'Please enable storage permission in app settings to use this feature.');
-                }
-              } else {
-                final permissionStatus = await Permission.camera.status;
-                if (permissionStatus.isPermanentlyDenied ||
-                    permissionStatus.isDenied) {
-                  showPermissionSettingsDialog(context,
-                      'Please enable storage permission in app settings to use this feature.');
-                } else {
-                  getImageFromCamera(imageType);
-                }
-              }
-
-            },
-          ),
-        ],
-      ),
+        );
+      },
     );
-  }
 
+    // showCupertinoModalPopup(
+    //   context: context,
+    //   builder: (context) => Center(
+    //     child: CupertinoActionSheet(
+    //       actions: [
+    //         Container(
+    //           color: Color(0xe81a61a8),
+    //           child: CupertinoActionSheetAction(
+    //             child: Text('Photo Gallery',style: TextStyle(color: Colors.white),),
+    //             onPressed: () async {
+    //               // close the options modal
+    //               Navigator.of(context).pop();
+    //
+    //               if (Platform.isAndroid && deviceInfo != null && deviceInfo.version.sdkInt <= 32) {
+    //                 var permissionStatus = await Permission.storage.request();
+    //                 if (permissionStatus.isGranted) {
+    //                   getImageFromGallery(imageType);
+    //                 } else if (permissionStatus.isPermanentlyDenied) {
+    //                   showPermissionSettingsDialog(context,
+    //                       'Please enable storage permission in app settings to use this feature.');
+    //                 }
+    //               } else {
+    //
+    //                 getImageFromGallery(imageType);
+    //               }
+    //             },
+    //           ),
+    //         ),
+    //         Container(
+    //           color:Color(0xe81a61a8),
+    //           child: CupertinoActionSheetAction(
+    //             child: Text('Camera',style: TextStyle(color: Colors.white),),
+    //             onPressed: () async {
+    //               // close the options modal
+    //               Navigator.of(context).pop();
+    //
+    //
+    //
+    //               if (Platform.isAndroid && deviceInfo != null && deviceInfo.version.sdkInt <= 32) {
+    //                 var permissionStatus = await Permission.camera.request();
+    //
+    //                 if (permissionStatus.isGranted) {
+    //                   // get image from camera
+    //                   getImageFromCamera(imageType);
+    //                 } else if (permissionStatus.isPermanentlyDenied) {
+    //                   showPermissionSettingsDialog(context,
+    //                       'Please enable storage permission in app settings to use this feature.');
+    //                 }
+    //               } else {
+    //                 final permissionStatus = await Permission.camera.status;
+    //                 if (permissionStatus.isPermanentlyDenied) {
+    //                   showPermissionSettingsDialog(context,
+    //                       'Please enable storage permission in app settings to use this feature.');
+    //                 } else {
+    //                   getImageFromCamera(imageType);
+    //                 }
+    //               }
+    //
+    //             },
+    //           ),
+    //         ),
+    //       ],
+    //     ),
+    //   ),
+    // );
+
+
+
+
+
+  }
 
   //Image Picker function to get image from gallery
 
   List<XFile> images = [];
 
   Future getImageFromGallery(String imageType) async {
+    if (imageType == "profileImage") {
+      try {
+        final picker = ImagePicker();
+        final pickedFile = await picker.pickImage(
+            source: ImageSource.gallery, imageQuality: 25);
 
-    if(imageType == "profileImage") {
-      await picker.pickImage(source: ImageSource.gallery, imageQuality: 25)
-          .then((value) => {
-        if (value != null) {cropImageCall(File(value.path),imageType)}
-      });
-    }else {
-      final List<XFile>? selectedImages = await picker.pickMultiImage(imageQuality: 25);
-      if (selectedImages != null) {
-        setState(() {
-          images = selectedImages;
-        });
-        setState(() {
-          isLoading = true;
-        });
-        await uploadImages(images, "imageType"); // Use appropriate imageType
+        if (pickedFile != null) {
+          cropImageCall(File(pickedFile.path), imageType);
+        } else {
+          print('No image selected.');
+        }
+      } on PlatformException catch (e) {
+        if (e.code == 'photo_access_denied') {
+          showPermissionSettingsDialog(context,
+              'Please enable photos permission in app settings to use this feature.');
+        } else {
+          print('PlatformException: ${e.message}');
+        }
+      } catch (e) {
+        print('An unexpected error occurred: $e');
       }
-
+    } else {
+      try {
+        final List<XFile>? selectedImages =
+            await picker.pickMultiImage(imageQuality: 25);
+        if (selectedImages != null) {
+          setState(() {
+            images = selectedImages;
+          });
+          setState(() {
+            isLoading = true;
+          });
+          await uploadImages(images, "imageType"); // Use appropriate imageType
+        }
+      } on PlatformException catch (e) {
+        if (e.code == 'photo_access_denied') {
+          showPermissionSettingsDialog(context,
+              'Please enable photos permission in app settings to use this feature.');
+        } else {
+          print('PlatformException: ${e.message}');
+        }
+      } catch (e) {
+        print('An unexpected error occurred: $e');
+      }
     }
-
   }
 
   //Image Picker function to get image from camera
   Future getImageFromCamera(String imageType) async {
-    await picker
-        .pickImage(source: ImageSource.camera, imageQuality: 25)
-        .then((value) async => {
-      if (value != null) {cropImageCall(File(value.path),imageType)}
-    });
+    try {
+      await picker
+          .pickImage(source: ImageSource.camera, imageQuality: 25)
+          .then((value) async => {
+                if (value != null) {cropImageCall(File(value.path), imageType)}
+              });
+    } on PlatformException catch (e) {
+      if (e.code == 'camera_access_denied') {
+        showPermissionSettingsDialog(context,
+            'Please enable camera permission in app settings to use this feature.');
+      } else {
+        print('PlatformException: ${e.message}');
+      }
+    } catch (e) {
+      print('An unexpected error occurred: $e');
+    }
   }
 
   List<XFile> croppedImageXFile = [];
-  cropImageCall(File imgFile,String imageType) async {
+
+  cropImageCall(File imgFile, String imageType) async {
     String? croppedImagePath = await cropImage(imgFile);
     print("croppedImagePath $croppedImagePath");
-    croppedImageXFile.add( XFile(croppedImagePath!));
+    croppedImageXFile.add(XFile(croppedImagePath!));
     setState(() {
       isLoading = true;
     });
     // Read the file at the specified path
-    uploadImages(croppedImageXFile,imageType);
+    uploadImages(croppedImageXFile, imageType);
   }
 
   Future<void> uploadImages(List<XFile> imageFiles, String imageType) async {
@@ -1252,7 +1366,8 @@ class _TabBarPageState extends State<TabBarPage>
 
     List<MultipartFile> files = [];
     for (XFile image in imageFiles) {
-      String formattedDate = DateFormat('yyyy-MM-dd HHmmss').format(DateTime.now());
+      String formattedDate =
+          DateFormat('yyyy-MM-dd HHmmss').format(DateTime.now());
       String name = 'properties_$formattedDate.png';
       files.add(await MultipartFile.fromFile(image.path, filename: name));
     }
@@ -1274,7 +1389,8 @@ class _TabBarPageState extends State<TabBarPage>
         if (imageType == "profileImage") {
           _webViewController.runJavaScript('getFileBytesData(`$responseData`)');
         } else {
-          _webViewController.runJavaScript('getFileBytesDataListing(`$responseData`)');
+          _webViewController
+              .runJavaScript('getFileBytesDataListing(`$responseData`)');
         }
       } else {
         print('Image upload failed: ${response.statusCode}');
@@ -1283,8 +1399,6 @@ class _TabBarPageState extends State<TabBarPage>
       print('Error occurred: $e');
     }
   }
-
-
 
   void showPermissionSettingsDialog(BuildContext context, String msg) {
     showDialog(
@@ -1430,6 +1544,7 @@ class _TabBarPageState extends State<TabBarPage>
 //
 
 String html = """
+    
 <html>
 <head>
     <title>Example Page</title>
@@ -1485,4 +1600,5 @@ String html = """
 <button onclick="sendToFlutter()">Send Message to Flutter</button>
 </body>
 </html>
+    
     """;

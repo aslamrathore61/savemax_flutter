@@ -7,10 +7,8 @@ class Config {
 
  // uat
  static const String menuUrl = 'https://uatapi.savemax.com/userservice/api/configs/';
- // static const String HOME_URL = "https://uat1.savemax.com/";
- static const String HOME_URL = "http://192.168.1.98:3000/";
-
-
+ static const String HOME_URL = "https://uat1.savemax.com/";
+ // static const String HOME_URL = "http://192.168.1.98:3000/";
 
 
  //profile menu id
@@ -38,6 +36,8 @@ class Config {
   static const String preConstruction = "f7b9c6468a96447aa61dac105effbb81";
   static const String gameChanger = "db3333dffc5b4fb984143fa55e411366";
   static const String addAssissment = "db8888dffc5b4fb984143fa55e411366";
+
+  static const String inAppLocaationID = "e062b834c252456d931c8cda6cf07b44";
 
 
   static const int SPLASH_TIMEOUT = 3000;
