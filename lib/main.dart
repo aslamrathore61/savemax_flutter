@@ -28,6 +28,7 @@ Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -49,8 +50,6 @@ Future<void> main() async {
       permission = await Geolocator.requestPermission();
     }
   }
-
-
 
   await messaging.requestPermission(
     alert: true,

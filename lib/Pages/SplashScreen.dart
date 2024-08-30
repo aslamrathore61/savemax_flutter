@@ -84,7 +84,7 @@ void getSavedDataFromDatabase(BuildContext savedContext) async {
       PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
       String currentVersion = packageInfo.buildNumber;
-      print('currentVersion ${currentVersion}');
+     print('currentVersion ${currentVersion}');
 
       final String platformVersionKey = Platform.isAndroid ? Config.ANDROID_VERSION : Config.IOS_VERSION;
       final int platformVersion = await getPrefIntegerValue(platformVersionKey);
@@ -106,6 +106,8 @@ void getSavedDataFromDatabase(BuildContext savedContext) async {
           },
         );
       }
+
+
 
     } else {
       showDialog(
@@ -130,8 +132,8 @@ void getSavedDataFromDatabase(BuildContext savedContext) async {
     return null;
   }
 
-  Future<String> getCurrentVersion() async {
+/*  Future<String> getCurrentVersion() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     return packageInfo.version;
-  }
+  }*/
 }

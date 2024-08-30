@@ -10,6 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -65,6 +66,7 @@ class _TabBarPageState extends State<TabBarPage>
 
   late final TabController _tabController;
   late final WebViewController _webViewController;
+  bool _isGestureDisabled = false; // Track whether gestures are disabled
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool isProfileMenuVisible = false;
@@ -426,12 +428,16 @@ class _TabBarPageState extends State<TabBarPage>
           Config.addAssissment,
         ];
 
-        if (widget.userInfo != null && redirectwihtToken.contains(_id)) {
+        if (redirectwihtToken.contains(_id)) {
+          print('userInfoDetails ${_userInfo?.toJson()}');
           print('launchURL $url${widget.userInfo?.token}');
-          _launchUrl('$url ${widget.userInfo?.token}');
+
+          final token = widget.userInfo?.token ?? _userInfo?.token;
+          _launchUrl(token != null ? '$url $token' : url);
         } else {
           _launchUrl(url);
         }
+
       }
     }
   }
@@ -444,16 +450,13 @@ class _TabBarPageState extends State<TabBarPage>
 
   Future<void> _checkInitialConnectivity() async {
     bool result = await InternetConnection().hasInternetAccess;
-    print('hasInternetAccess $result');
 
     if (result) {
       setState(() async {
-        print("internetConnected 1 connected");
         IsInternetConnected = true;
         CommonLoadRequest(deepLinkingURL, _webViewController, context, "2");
       });
     } else {
-      print("internetConnected 2 Notconnected");
       setState(() {
         IsInternetConnected = false;
       });
@@ -463,7 +466,6 @@ class _TabBarPageState extends State<TabBarPage>
   Future<void> getSelectedLanguageID() async {
     mSelectedLanguageID = await getPrefStringValue(Config.LANUAGE_ID);
     mSelectedLanguageURL = await getPrefStringValue(Config.LANUAGE_URL);
-    print('mSelectedLange, $mSelectedLanguageURL');
   }
 
   bool canPop = false;
@@ -472,8 +474,6 @@ class _TabBarPageState extends State<TabBarPage>
   @override
   Widget build(BuildContext context) {
     _statusBarHeight = MediaQuery.of(context).padding.top;
-    print('DebuggCheking DebuggCheking');
-    // print('_initialConnectivity111 $_initialConnectivity');
     return PopScope(
       // key: _key,
       canPop: canPop,
@@ -489,35 +489,6 @@ class _TabBarPageState extends State<TabBarPage>
             //    margin: EdgeInsets.only(top: _statusBarHeight),
             child: Scaffold(
               key: _scaffoldKey,
-              /* floatingActionButton: FloatingActionButton(
-              onPressed: () async {
-
-                print('logoutGotClick');
-
-                //   String setVlaue = "Logout";
-                // _webViewController.runJavaScript('getLogout("$setVlaue")');
-
-                String logout = "logout";
-                _webViewController.runJavaScript('getLogout("$logout")');
-
-              }
-               */ /* try {
-                  // Check if the device supports alternate icons
-                  if (await FlutterDynamicIcon.supportsAlternateIcons) {
-                    // Change the icon
-                    await FlutterDynamicIcon.setAlternateIconName('gradient');
-                  }else {
-                    print('notSupportAlternativeIcon');
-                  }
-                } on PlatformException catch (_) {
-                  print('Failed to change app icon');
-                }
-
-                CallAppIconChangerMethod(
-                    ".MainActivityB");
-              },*/ /*
-            ),*/
-
               drawer: Container(
                 width: MediaQuery.of(context).size.width - 74,
                 margin: EdgeInsets.only(top: _statusBarHeight),
@@ -845,8 +816,23 @@ class _TabBarPageState extends State<TabBarPage>
                                 print('httpResponseError $error');
                               },
                               onNavigationRequest: (NavigationRequest request) {
+
                                 final url = request.url;
-                                print('onNavigationRequest ${request.url}');
+                                print("launchUrlll $url");
+                                if(url.contains("https://savemax.com/blogs/")) {
+                                  _launchUrl(url);
+                                  return NavigationDecision.prevent;
+                                }
+
+                                if(url.contains(Config.HOME_URL) || url.contains("https://www.youtube.com/embed")) {
+                                  return NavigationDecision.navigate;
+                                }else {
+                                  _launchUrl(url);
+                                  return NavigationDecision.prevent;
+                                }
+
+
+                              /*  print('onNavigationRequest ${request.url}');
                                 // Handle mailto links
                                 if (url.startsWith('mailto:') ||
                                     url.contains('UCsj05jLd-DMLhk_gqpZDGeA')) {
@@ -874,6 +860,7 @@ class _TabBarPageState extends State<TabBarPage>
                                   'https://savemax.com/blogs/',
                                   'https://risewithraman.com/',
                                   'https://savemax.bamboohr.com/careers',
+                                  'https://tour',
                                 ];
 
                                 for (var prefix in socialMediaPrefixes) {
@@ -883,58 +870,75 @@ class _TabBarPageState extends State<TabBarPage>
                                   }
                                 }
 
-                                return NavigationDecision.navigate;
+                                return NavigationDecision.navigate;*/
                               },
                             ),
                           ),
                       ),
                     ),
-              bottomNavigationBar: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border(
-                    top: BorderSide(
-                      color: Colors.grey, // Top border color for the TabBar
-                      width: 0.5, // Width of the top border
-                    ),
-                  ),
-                ),
-                child: TabBar(
-                  labelColor: Colors.red,
-                  unselectedLabelColor: Colors.black,
-                  controller: _tabController,
-                  indicator: BoxDecoration(
+              bottomNavigationBar: AbsorbPointer(
+                absorbing: _isGestureDisabled, // Disable gestures when true
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
                     border: Border(
                       top: BorderSide(
-                        color: Colors.red, // Color of the indicator
-                        width: 4.0, // Height of the indicator
+                        color: Colors.grey, // Top border color for the TabBar
+                        width: 0.5, // Width of the top border
                       ),
                     ),
                   ),
-                  labelPadding: EdgeInsets.symmetric(vertical: 0),
-                  labelStyle: TextStyle(fontSize: 13, fontFamily: 'Poppins'),
-                  splashFactory: NoSplash.splashFactory,
-                  onTap: (index) {
-                    final url = widget.nativeItem.bottom![index].uRL!;
-                    _onTabTapped(
-                        index, url, widget.nativeItem.bottom![index].id!);
-                  },
-                  tabs: widget.nativeItem.bottom!.map((item) {
-                    final svgBytes = base64Decode(item.icon!);
-                    final svgString = utf8.decode(svgBytes);
-                    return Tab(
-                      icon: SvgPicture.string(
-                        svgString,
-                        width: 24.0,
-                        height: 24.0,
-                        color: _tabController.index ==
-                                widget.nativeItem.bottom!.indexOf(item)
-                            ? Colors.red
-                            : Colors.black,
+                  child: TabBar(
+                    labelColor: Colors.red,
+                    unselectedLabelColor: Colors.black,
+                    controller: _tabController,
+                    indicator: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: Colors.red, // Color of the indicator
+                          width: 4.0, // Height of the indicator
+                        ),
                       ),
-                      text: item.title,
-                    );
-                  }).toList(),
+                    ),
+                    labelPadding: EdgeInsets.symmetric(vertical: 0),
+                    labelStyle: TextStyle(fontSize: 13, fontFamily: 'Poppins'),
+                    splashFactory: NoSplash.splashFactory,
+                    onTap: (index) {
+
+                    if (!_isGestureDisabled) {
+                      final url = widget.nativeItem.bottom![index].uRL!;
+                      _onTabTapped(index, url, widget.nativeItem.bottom![index].id!);
+
+                      setState(() {
+                        _isGestureDisabled = true; // Disable gestures
+                      });
+
+                      Timer(Duration(seconds: 1), () {
+                        setState(() {
+                          _isGestureDisabled = false; // Re-enable gestures after 5 seconds
+                        });
+                      });
+
+                    }
+
+                    },
+                    tabs: widget.nativeItem.bottom!.map((item) {
+                      final svgBytes = base64Decode(item.icon!);
+                      final svgString = utf8.decode(svgBytes);
+                      return Tab(
+                        icon: SvgPicture.string(
+                          svgString,
+                          width: 24.0,
+                          height: 24.0,
+                          color: _tabController.index ==
+                                  widget.nativeItem.bottom!.indexOf(item)
+                              ? Colors.red
+                              : Colors.black,
+                        ),
+                        text: item.title,
+                      );
+                    }).toList(),
+                  ),
                 ),
               ),
             ),
@@ -1278,8 +1282,10 @@ class _TabBarPageState extends State<TabBarPage>
   //Image Picker function to get image from gallery
 
   List<XFile> images = [];
+  List<XFile> croppedImageXFile = [];
 
   Future getImageFromGallery(String imageType) async {
+    croppedImageXFile.clear();
     if (imageType == "profileImage") {
       try {
         final picker = ImagePicker();
@@ -1303,16 +1309,31 @@ class _TabBarPageState extends State<TabBarPage>
       }
     } else {
       try {
-        final List<XFile>? selectedImages =
-            await picker.pickMultiImage(imageQuality: 25);
+        final List<XFile>? selectedImages = await picker.pickMultiImage(imageQuality: 25);
         if (selectedImages != null) {
+          List<XFile> processedImages = [];
+
+          // Process images: compress PNGs
+          for (XFile image in selectedImages) {
+            if (image.path.endsWith('.png')) {
+              XFile compressedImage = await compressPngImage(File(image.path));
+              processedImages.add(XFile(compressedImage.path));
+            } else {
+              // JPEG images are already compressed by imageQuality, add them as is
+              processedImages.add(image);
+            }
+          }
+
           setState(() {
-            images = selectedImages;
-          });
-          setState(() {
+            images = processedImages;
             isLoading = true;
           });
+
           await uploadImages(images, "imageType"); // Use appropriate imageType
+
+          setState(() {
+            isLoading = false;
+          });
         }
       } on PlatformException catch (e) {
         if (e.code == 'photo_access_denied') {
@@ -1327,8 +1348,21 @@ class _TabBarPageState extends State<TabBarPage>
     }
   }
 
+
+  Future<XFile> compressPngImage(File file) async {
+    final result = await FlutterImageCompress.compressAndGetFile(
+      file.absolute.path,
+      "${file.path}_compressed.png",
+      quality: 50, // PNG compression; works differently from JPEG
+      format: CompressFormat.png,
+    );
+
+    return result!;
+  }
+
   //Image Picker function to get image from camera
   Future getImageFromCamera(String imageType) async {
+    croppedImageXFile.clear();
     try {
       await picker
           .pickImage(source: ImageSource.camera, imageQuality: 25)
@@ -1347,7 +1381,6 @@ class _TabBarPageState extends State<TabBarPage>
     }
   }
 
-  List<XFile> croppedImageXFile = [];
 
   cropImageCall(File imgFile, String imageType) async {
     String? croppedImagePath = await cropImage(imgFile);
@@ -1387,6 +1420,7 @@ class _TabBarPageState extends State<TabBarPage>
         });
 
         if (imageType == "profileImage") {
+          print('responseDataprofileImage : $responseData');
           _webViewController.runJavaScript('getFileBytesData(`$responseData`)');
         } else {
           _webViewController

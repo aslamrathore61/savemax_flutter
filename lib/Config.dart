@@ -2,12 +2,12 @@ class Config {
 
 
  // production
- // final String menuUrl = 'https://api.savemax.com/userservice/api/configs/';
- // static const String HOME_URL = "https://savemax.com/";
+ static const String menuUrl= 'https://api.savemax.com/userservice/api/configs/';
+ static const String HOME_URL = "https://savemax.com/";
 
  // uat
- static const String menuUrl = 'https://uatapi.savemax.com/userservice/api/configs/';
- static const String HOME_URL = "https://uat1.savemax.com/";
+ // static const String menuUrl = 'https://uatapi.savemax.com/userservice/api/configs/';
+ // static const String HOME_URL = "https://uat1.savemax.com/";
  // static const String HOME_URL = "http://192.168.1.98:3000/";
 
 

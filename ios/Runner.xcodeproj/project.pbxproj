@@ -10,18 +10,7 @@
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		331C808B294A63AB00263BE5 /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331C807B294A618700263BE5 /* RunnerTests.swift */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
-		48364FC32BFE0C11003A3007 /* galaxyIpad@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 48364FC22BFE0C11003A3007 /* galaxyIpad@2x.png */; };
-		48364FCF2BFE0C21003A3007 /* blackIpadPro@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 48364FC42BFE0C21003A3007 /* blackIpadPro@2x.png */; };
-		48364FD02BFE0C21003A3007 /* black@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 48364FC52BFE0C21003A3007 /* black@2x.png */; };
-		48364FD12BFE0C21003A3007 /* gradient@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 48364FC62BFE0C21003A3007 /* gradient@3x.png */; };
-		48364FD22BFE0C21003A3007 /* blackIpad@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 48364FC72BFE0C21003A3007 /* blackIpad@2x.png */; };
-		48364FD32BFE0C21003A3007 /* galaxyIpadPro@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 48364FC82BFE0C21003A3007 /* galaxyIpadPro@2x.png */; };
-		48364FD42BFE0C21003A3007 /* gradient@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 48364FC92BFE0C21003A3007 /* gradient@2x.png */; };
-		48364FD52BFE0C21003A3007 /* gradientIapd@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 48364FCA2BFE0C21003A3007 /* gradientIapd@2x.png */; };
-		48364FD62BFE0C21003A3007 /* galaxy@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 48364FCB2BFE0C21003A3007 /* galaxy@3x.png */; };
-		48364FD72BFE0C21003A3007 /* gradientIpadPro@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 48364FCC2BFE0C21003A3007 /* gradientIpadPro@2x.png */; };
-		48364FD82BFE0C21003A3007 /* black@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 48364FCD2BFE0C21003A3007 /* black@3x.png */; };
-		48364FD92BFE0C21003A3007 /* galaxy@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 48364FCE2BFE0C21003A3007 /* galaxy@2x.png */; };
+		48B0CD152C7A192A005CCACD /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 48B0CD142C7A192A005CCACD /* PrivacyInfo.xcprivacy */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
@@ -62,18 +51,7 @@
 		331C807B294A618700263BE5 /* RunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerTests.swift; sourceTree = "<group>"; };
 		331C8081294A63A400263BE5 /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
-		48364FC22BFE0C11003A3007 /* galaxyIpad@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "galaxyIpad@2x.png"; path = "../../../../../Desktop/appIcon/galaxyIpad@2x.png"; sourceTree = "<group>"; };
-		48364FC42BFE0C21003A3007 /* blackIpadPro@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "blackIpadPro@2x.png"; path = "../../../../../Desktop/appIcon/blackIpadPro@2x.png"; sourceTree = "<group>"; };
-		48364FC52BFE0C21003A3007 /* black@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "black@2x.png"; path = "../../../../../Desktop/appIcon/black@2x.png"; sourceTree = "<group>"; };
-		48364FC62BFE0C21003A3007 /* gradient@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "gradient@3x.png"; path = "../../../../../Desktop/appIcon/gradient@3x.png"; sourceTree = "<group>"; };
-		48364FC72BFE0C21003A3007 /* blackIpad@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "blackIpad@2x.png"; path = "../../../../../Desktop/appIcon/blackIpad@2x.png"; sourceTree = "<group>"; };
-		48364FC82BFE0C21003A3007 /* galaxyIpadPro@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "galaxyIpadPro@2x.png"; path = "../../../../../Desktop/appIcon/galaxyIpadPro@2x.png"; sourceTree = "<group>"; };
-		48364FC92BFE0C21003A3007 /* gradient@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "gradient@2x.png"; path = "../../../../../Desktop/appIcon/gradient@2x.png"; sourceTree = "<group>"; };
-		48364FCA2BFE0C21003A3007 /* gradientIapd@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "gradientIapd@2x.png"; path = "../../../../../Desktop/appIcon/gradientIapd@2x.png"; sourceTree = "<group>"; };
-		48364FCB2BFE0C21003A3007 /* galaxy@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "galaxy@3x.png"; path = "../../../../../Desktop/appIcon/galaxy@3x.png"; sourceTree = "<group>"; };
-		48364FCC2BFE0C21003A3007 /* gradientIpadPro@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "gradientIpadPro@2x.png"; path = "../../../../../Desktop/appIcon/gradientIpadPro@2x.png"; sourceTree = "<group>"; };
-		48364FCD2BFE0C21003A3007 /* black@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "black@3x.png"; path = "../../../../../Desktop/appIcon/black@3x.png"; sourceTree = "<group>"; };
-		48364FCE2BFE0C21003A3007 /* galaxy@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "galaxy@2x.png"; path = "../../../../../Desktop/appIcon/galaxy@2x.png"; sourceTree = "<group>"; };
+		48B0CD142C7A192A005CCACD /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		48E27B822BFDC6E600896E86 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		4A768F4EFC8B088FFE805600 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -133,26 +111,6 @@
 			path = RunnerTests;
 			sourceTree = "<group>";
 		};
-		48364FC12BFE0210003A3007 /* AppIcons */ = {
-			isa = PBXGroup;
-			children = (
-				48364FC52BFE0C21003A3007 /* black@2x.png */,
-				48364FCD2BFE0C21003A3007 /* black@3x.png */,
-				48364FC72BFE0C21003A3007 /* blackIpad@2x.png */,
-				48364FC42BFE0C21003A3007 /* blackIpadPro@2x.png */,
-				48364FCE2BFE0C21003A3007 /* galaxy@2x.png */,
-				48364FCB2BFE0C21003A3007 /* galaxy@3x.png */,
-				48364FC82BFE0C21003A3007 /* galaxyIpadPro@2x.png */,
-				48364FC92BFE0C21003A3007 /* gradient@2x.png */,
-				48364FC62BFE0C21003A3007 /* gradient@3x.png */,
-				48364FCA2BFE0C21003A3007 /* gradientIapd@2x.png */,
-				48364FCC2BFE0C21003A3007 /* gradientIpadPro@2x.png */,
-				48364FC22BFE0C11003A3007 /* galaxyIpad@2x.png */,
-			);
-			name = AppIcons;
-			path = "../../../../StudioProjects/dynamic-icons-example/ios/Runner/AppIcons";
-			sourceTree = "<group>";
-		};
 		9740EEB11CF90186004384FC /* Flutter */ = {
 			isa = PBXGroup;
 			children = (
@@ -167,6 +125,7 @@
 		97C146E51CF9000F007C117D = {
 			isa = PBXGroup;
 			children = (
+				48B0CD142C7A192A005CCACD /* PrivacyInfo.xcprivacy */,
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
 				97C146EF1CF9000F007C117D /* Products */,
@@ -188,7 +147,6 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
-				48364FC12BFE0210003A3007 /* AppIcons */,
 				48E27B822BFDC6E600896E86 /* Runner.entitlements */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
@@ -245,7 +203,7 @@
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				3BBE7F78A1F98AC7F9C1FDF8 /* [CP] Embed Pods Frameworks */,
-				A5CCAD62C96D5E9CDB0CAD88 /* [CP] Copy Pods Resources */,
+				AD13AD7E938958C7C8CC29F1 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -307,21 +265,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				48364FD92BFE0C21003A3007 /* galaxy@2x.png in Resources */,
-				48364FD02BFE0C21003A3007 /* black@2x.png in Resources */,
 				97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */,
-				48364FD22BFE0C21003A3007 /* blackIpad@2x.png in Resources */,
-				48364FC32BFE0C11003A3007 /* galaxyIpad@2x.png in Resources */,
-				48364FD12BFE0C21003A3007 /* gradient@3x.png in Resources */,
-				48364FCF2BFE0C21003A3007 /* blackIpadPro@2x.png in Resources */,
-				48364FD42BFE0C21003A3007 /* gradient@2x.png in Resources */,
-				48364FD32BFE0C21003A3007 /* galaxyIpadPro@2x.png in Resources */,
-				48364FD72BFE0C21003A3007 /* gradientIpadPro@2x.png in Resources */,
-				48364FD52BFE0C21003A3007 /* gradientIapd@2x.png in Resources */,
+				48B0CD152C7A192A005CCACD /* PrivacyInfo.xcprivacy in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
-				48364FD62BFE0C21003A3007 /* galaxy@3x.png in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
-				48364FD82BFE0C21003A3007 /* black@3x.png in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -399,7 +346,7 @@
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build";
 		};
-		A5CCAD62C96D5E9CDB0CAD88 /* [CP] Copy Pods Resources */ = {
+		AD13AD7E938958C7C8CC29F1 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -547,15 +494,17 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
-				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				CURRENT_PROJECT_VERSION = 181;
 				DEVELOPMENT_TEAM = 35D3JBSU5H;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Save Max";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.2.45;
 				PRODUCT_BUNDLE_IDENTIFIER = com.app.savemax;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -732,15 +681,17 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
-				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				CURRENT_PROJECT_VERSION = 181;
 				DEVELOPMENT_TEAM = 35D3JBSU5H;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Save Max";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.2.45;
 				PRODUCT_BUNDLE_IDENTIFIER = com.app.savemax;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -757,15 +708,17 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
-				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				CURRENT_PROJECT_VERSION = 181;
 				DEVELOPMENT_TEAM = 35D3JBSU5H;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Save Max";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.2.45;
 				PRODUCT_BUNDLE_IDENTIFIER = com.app.savemax;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";

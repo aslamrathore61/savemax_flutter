@@ -94,7 +94,7 @@ class ForceUpdateScreen extends StatelessWidget {
                   icon: Icon(Icons.download,
                       color: Colors.white, size: 16),
                   press: () {
-                    launchAppStore(context);
+                   launchAppStore(context);
                   },
                   text: "UPDATE NOW".toUpperCase(),
                 ),
