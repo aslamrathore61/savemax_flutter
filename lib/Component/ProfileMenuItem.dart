@@ -40,6 +40,12 @@ class _DrawerMenuItemState extends State<ProfileMenuItem> {
     Config.Market_Place,
   ];
 
+  List<String> userLoginvisiblity = [
+    Config.View_Profile,
+    Config.Favourites,
+    Config.LOGOUT_ID,
+  ];
+
   List<String> otherwillshowalways = [
     Config.View_Profile,
     Config.Add_Assignment,
@@ -56,7 +62,19 @@ class _DrawerMenuItemState extends State<ProfileMenuItem> {
 
 
   bool shouldShowRow() {
-    print('profileResponse ${widget.profileResponse}');
+    print('profileResponse ${widget.profileResponse?.toJson()}');
+    print('userTypeResponse ${widget.userType}');
+
+    if (widget.userType == "user") {
+      if(userLoginvisiblity.contains(widget.parentID)) {
+        return false;
+      }else {
+        return true;
+      }
+    }
+
+
+
     if (widget.profileResponse?.openHouseAdminFlag == false &&
         openHouseAdminFlag.contains(widget.parentID)) {
       return true;
@@ -72,7 +90,7 @@ class _DrawerMenuItemState extends State<ProfileMenuItem> {
       return false;
     } else if (widget.userType == "agent" && agentLoginvisiblity.contains(widget.parentID)) {
       return false;
-    } else if (widget.userType != "agent" && widget.parentID == Config.Dashboard) {
+    }  else if (widget.userType != "agent" && widget.parentID == Config.Dashboard) {
       return false;
     } else if (otherwillshowalways.contains(widget.parentID)) {
       return false;

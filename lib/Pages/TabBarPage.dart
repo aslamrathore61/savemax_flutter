@@ -431,8 +431,8 @@ class _TabBarPageState extends State<TabBarPage>
         if (redirectwihtToken.contains(_id)) {
           print('userInfoDetails ${_userInfo?.toJson()}');
           print('launchURL $url${widget.userInfo?.token}');
-
-          final token = widget.userInfo?.token ?? _userInfo?.token;
+        //  final token = widget.userInfo?.token ?? _userInfo?.token;
+          final token = _userInfo?.token ??  widget.userInfo?.token;
           _launchUrl(token != null ? '$url $token' : url);
         } else {
           _launchUrl(url);
@@ -572,21 +572,19 @@ class _TabBarPageState extends State<TabBarPage>
                                             radius: 20.0,
                                           ),
                                           SizedBox(width: 10),
-                                          _userInfo != null
-                                              ? Text(
-                                                  _userInfo!.name!
-                                                      .split(' ')
-                                                      .take(2)
-                                                      .map((String word) {
-                                                    return word
-                                                            .substring(0, 1)
-                                                            .toUpperCase() +
-                                                        word.substring(1);
-                                                  }).join(' '),
-                                                  style:
-                                                      TextStyle(fontSize: 14),
-                                                )
-                                              : Text('-'),
+
+                                          Text(
+                                            (profileResponse?.name?.trim().isEmpty ?? true ? 'Hi' : profileResponse!.name!)
+                                                .split(' ')
+                                                .take(2)
+                                                .map((String word) {
+                                              return word.isNotEmpty
+                                                  ? word.substring(0, 1).toUpperCase() + (word.length > 1 ? word.substring(1) : '')
+                                                  : ''; // Handle empty strings
+                                            }).join(' ').trim(),
+                                            style: TextStyle(fontSize: 14),
+                                          ),
+
                                           SizedBox(width: 20),
                                           Icon(
                                             isProfileMenuVisible
@@ -708,19 +706,17 @@ class _TabBarPageState extends State<TabBarPage>
                                           Config.LANUAGE_URL, url);
                                       // handle
                                     } else if (foundIndex != -1) {
-                                      print('parentURL  1111');
 
                                       _tabController.index = foundIndex;
                                       _onTabTapped(foundIndex, url, id);
                                     } else {
-                                      print('parentURL  2222');
 
                                       if (id == Config.inAppLocaationID) {
                                         if (Platform.isAndroid) {
                                           _launchUrl(url);
                                         } else {
                                           _launchUrl(
-                                              'https://apps.apple.com/in/app/save-max-real-estate-india/id6451472373');
+                                              'https://apps.apple.com/us/app/save-max-real-estate-india/id6451472373');
                                         }
                                       } else {
                                         _onTabTapped(0, url, id);
@@ -824,7 +820,7 @@ class _TabBarPageState extends State<TabBarPage>
                                   return NavigationDecision.prevent;
                                 }
 
-                                if(url.contains(Config.HOME_URL) || url.contains("https://www.youtube.com/embed")) {
+                                if(url.contains(Config.HOME_URL) || url.contains("https://www.youtube.com/embed") || url.contains("https://form.jotform.com")) {
                                   return NavigationDecision.navigate;
                                 }else {
                                   _launchUrl(url);
@@ -991,12 +987,18 @@ class _TabBarPageState extends State<TabBarPage>
         shareURL(data['text'], data['url']);
         //title
       } else if (data['flutter'] == 'profile') {
-        if (!profileUpdated) {
+       /* if (!profileUpdated) {
           profileUpdated = true;
           setState(() {
+            print('thisOneGetCall ${profileResponse?.name}');
             profileResponse = ProfileResponse.fromJson(data);
           });
-        }
+        }*/
+
+        setState(() {
+          print('thisOneGetCall ${profileResponse?.name}');
+          profileResponse = ProfileResponse.fromJson(data);
+        });
 
         print('profileRespons ${profileResponse!.toJson()}');
       } else {
