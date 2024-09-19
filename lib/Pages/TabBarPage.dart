@@ -713,7 +713,7 @@ class _TabBarPageState extends State<TabBarPage>
 
                                       if (id == Config.inAppLocaationID) {
                                         if (Platform.isAndroid) {
-                                          _launchUrl(url);
+                                          _launchUrl('https://play.google.com/store/apps/details?id=com.app.savemaxindia');
                                         } else {
                                           _launchUrl(
                                               'https://apps.apple.com/us/app/save-max-real-estate-india/id6451472373');
@@ -1057,45 +1057,33 @@ class _TabBarPageState extends State<TabBarPage>
     Location location = Location();
     bool serviceEnabled = await location.serviceEnabled();
     if (!serviceEnabled) {
+      print('locationTest 0');
       serviceEnabled = await location.requestService();
       if (!serviceEnabled) {
+        print('locationTest 1');
         return;
       }
     }
 
     LocationPermission permission = await Geolocator.checkPermission();
 
+    print('locationTest $permission');
+
     if (permission == LocationPermission.denied) {
+      print('locationTest 2');
       permission = await Geolocator.requestPermission();
+      print("checkLocation $permission");
+      if(permission == LocationPermission.deniedForever) {
+        showLocationPermissionDialog(context);
+        return;
+      }
     } else if (permission == LocationPermission.deniedForever) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Location Permission Required'),
-          content: Text(
-              'Please enable location permissions in your device settings to use this feature.'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                // Open the app settings
-                Navigator.pop(context);
-                openAppSettings();
-              },
-              child: Text('Settings'),
-            ),
-          ],
-        ),
-      );
+      print('locationTest 3');
+      showLocationPermissionDialog(context);
       return;
     } else if (permission != LocationPermission.whileInUse &&
         permission != LocationPermission.always) {
-      print('check 6');
+      print('locationTest 4');
       return;
     }
     Position? position = await Geolocator.getLastKnownPosition();
@@ -1104,6 +1092,7 @@ class _TabBarPageState extends State<TabBarPage>
         'CurrentLatLong - Latitude: ${position?.latitude}, Longitude: ${position?.longitude}');
 
     if (position?.latitude != null && position?.longitude != null) {
+      print('locationTest 5');
       String jsCode =
           '{"latitude": "${position?.latitude}", "longitude": "${position?.longitude}"}';
       webViewController.runJavaScript('getLatLong(`$jsCode`)');
@@ -1135,6 +1124,33 @@ class _TabBarPageState extends State<TabBarPage>
         }
       });
     }
+  }
+
+
+  void showLocationPermissionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Location Permission Required'),
+        content: Text(
+            'Please enable location permissions in your device settings to use this feature.'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              openAppSettings();
+            },
+            child: Text('Settings'),
+          ),
+        ],
+      ),
+    );
   }
 
   //Show options to get image from camera or gallery
@@ -1208,76 +1224,6 @@ class _TabBarPageState extends State<TabBarPage>
         );
       },
     );
-
-    // showCupertinoModalPopup(
-    //   context: context,
-    //   builder: (context) => Center(
-    //     child: CupertinoActionSheet(
-    //       actions: [
-    //         Container(
-    //           color: Color(0xe81a61a8),
-    //           child: CupertinoActionSheetAction(
-    //             child: Text('Photo Gallery',style: TextStyle(color: Colors.white),),
-    //             onPressed: () async {
-    //               // close the options modal
-    //               Navigator.of(context).pop();
-    //
-    //               if (Platform.isAndroid && deviceInfo != null && deviceInfo.version.sdkInt <= 32) {
-    //                 var permissionStatus = await Permission.storage.request();
-    //                 if (permissionStatus.isGranted) {
-    //                   getImageFromGallery(imageType);
-    //                 } else if (permissionStatus.isPermanentlyDenied) {
-    //                   showPermissionSettingsDialog(context,
-    //                       'Please enable storage permission in app settings to use this feature.');
-    //                 }
-    //               } else {
-    //
-    //                 getImageFromGallery(imageType);
-    //               }
-    //             },
-    //           ),
-    //         ),
-    //         Container(
-    //           color:Color(0xe81a61a8),
-    //           child: CupertinoActionSheetAction(
-    //             child: Text('Camera',style: TextStyle(color: Colors.white),),
-    //             onPressed: () async {
-    //               // close the options modal
-    //               Navigator.of(context).pop();
-    //
-    //
-    //
-    //               if (Platform.isAndroid && deviceInfo != null && deviceInfo.version.sdkInt <= 32) {
-    //                 var permissionStatus = await Permission.camera.request();
-    //
-    //                 if (permissionStatus.isGranted) {
-    //                   // get image from camera
-    //                   getImageFromCamera(imageType);
-    //                 } else if (permissionStatus.isPermanentlyDenied) {
-    //                   showPermissionSettingsDialog(context,
-    //                       'Please enable storage permission in app settings to use this feature.');
-    //                 }
-    //               } else {
-    //                 final permissionStatus = await Permission.camera.status;
-    //                 if (permissionStatus.isPermanentlyDenied) {
-    //                   showPermissionSettingsDialog(context,
-    //                       'Please enable storage permission in app settings to use this feature.');
-    //                 } else {
-    //                   getImageFromCamera(imageType);
-    //                 }
-    //               }
-    //
-    //             },
-    //           ),
-    //         ),
-    //       ],
-    //     ),
-    //   ),
-    // );
-
-
-
-
 
   }
 
@@ -1456,185 +1402,87 @@ class _TabBarPageState extends State<TabBarPage>
   }
 }
 
-// const String html = """
-// <html>
-// <head>
-//     <title>Example Page</title>
-//     <style>
-//         body {
-//             font-family: Arial, sans-serif;
-//             background-color: #f0f0f0;
-//             padding: 20px;
-//         }
-//         h1 {
-//             color: #333;
-//         }
-//         p {
-//             color: #666;
-//         }
-//     </style>
-//     <script>
-//         window.getFileBytesData = (filePath) => {
-//             console.log('filePath:', filePath);
-//             const imgElement = document.getElementById('imagePreview');
-//             imgElement.src = filePath;
-//         };
-//
-//
-//
-//         function sendToFlutter() {
-//             if (window.FlutterChannel) {
-//                 window.FlutterChannel.postMessage('ProvideProfileImageFormData');
-//             } else {
-//                 console.log('No native APIs found.');
-//             }
-//         }
-//     </script>
-// </head>
-// <body>
-//     <h1>Hello, Flutter!</h1>
-//     <p>This is an example HTML file loaded into a WebView in a Flutter app.</p>
-//     <button onclick="sendToFlutter()">Send Message to Flutter</button>
-//     <br/><br/>
-//     <img id="imagePreview" src="" alt="Image Preview" style="max-width: 100%; height: auto;"/>
-// </body>
-// </html>
-// """;
 
-//
-// String html = """<html>
-// <head>
-// <title>Image Preview</title>
-// </head>
-// <body>
-// <h1>Image Preview</h1>
-// <input type="file" id="fileInput">
-//  <button onclick="sendToFlutter()">Send Message to Flutter</button>
-// <button onclick="previewImage()">Preview Image</button>
-// <br><br>
-// <div id="imagePreview"></div>
-//
-// <script>
-//
-//
-//  function sendToFlutter() {
-//        if(window.FlutterChannel) {
-//         window.FlutterChannel.postMessage('ProvideProfileImageFormData');
-// }
-// };
-//
-// function previewImage() {
-//   const fileInput = document.getElementById('fileInput');
-//   const file = fileInput.files[0];
-//   if (!file) {
-//     alert('Please select a file.');
-//     return;
-//   }
-//
-//   const reader = new FileReader();
-//   reader.onload = function (e) {
-//     const base64String = e.target.result.split(',')[1];
-//     getFileBytesData(base64String);
-//   };
-//   reader.readAsDataURL(file);
-// }
-//
-// window.getFileBytesData = async base64String => {
-// console.log('base64', base64String);
-// try {
-// const mimeType = base64String.match(/data:(.*);base64/)[1];
-// const byteString = atob(base64String.split(',')[1]);
-// const ab = new ArrayBuffer(byteString.length);
-// const ia = new Uint8Array(ab);
-// for (let i = 0; i < byteString.length; i++) {
-// ia[i] = byteString.charCodeAt(i);
-// }
-// const blob = new Blob([ab], { type: mimeType });
-// const formData = new FormData();
-// formData.append('file', blob, 'fileName');
-//
-// // Create object URL from Blob
-// const imageUrl = URL.createObjectURL(blob);
-// console.log('imageUrl', imageUrl);
-//
-// // Create image element and set its source to the object URL
-// const image = new Image();
-// image.src = imageUrl;
-// const imagePreviewDiv = document.getElementById('imagePreview');
-// imagePreviewDiv.innerHTML = '';
-// imagePreviewDiv.appendChild(image);
-//
-// // Log form data entries
-// for (const entry of formData.entries()) {
-// console.log('formdataEntry', entry);
-// }
-// // await uploadProfileImage(formData);
-// } catch (error) {
-// console.error('Error in loop:', error);
-// }
-// };
-// </script>
-// </body>
-// </html>
-//     """;
-//
 
 String html = """
     
 <html>
 <head>
-    <title>Example Page</title>
+    <title>Get Coordinates from Device</title>
     <style>
         body {
-          font-family: Arial, sans-serif;
-          background-color: #f0f0f0;
-          padding: 20px;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
         }
         h1 {
-          color: #333;
+            color: #333;
         }
         p {
-          color: #666;
+            color: #666;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
         }
     </style>
     <script>
+        // Function to get device's current coordinates using HTML5 Geolocation API
+        function getCoordinates() {
+            if (navigator.geolocation) {
+                // Get current position
+                navigator.geolocation.getCurrentPosition(showPosition, showError, {
+                    enableHighAccuracy: true,
+                    timeout: 10000, // 10 seconds timeout
+                    maximumAge: 0 // No cache, get fresh data
+                });
+            } else {
+                alert('Geolocation is not supported by this browser.');
+            }
+        }
 
+        // Function to display coordinates on success
+        function showPosition(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
 
+            console.log('Latitude:', latitude);
+            console.log('Longitude:', longitude);
+            alert('Coordinates: Latitude = ' + latitude + ', Longitude = ' + longitude);
+        }
 
-//     window.getLatLong = (latlng) => {
-// const { latitude, longitude } = JSON.parse(latlng);
-// console.log('flutterLocationLat:', latitude);
-// console.log('flutterLocationLng:', longitude);
-// };
-
-
-  window.getFileBytesData = (response) => {
-
-    try {
-      console.log('pardedData',JSON.stringify(response));
-    } catch (error) {
-      console.error('Error parsing JSON', error);
-    }
-  };
-
-        function sendToFlutter() {
-       if(window.FlutterChannel) {
-               console.log('GetLocation')
-
-          // window.FlutterChannel.postMessage('GetLocation');
-       window.FlutterChannel.postMessage('ProvideProfileImageFormData');
-} else {
-        // No Android or iOS, Flutter interface found
-        console.log('No native APIs found.')
-    }
+        // Function to handle errors during location fetching
+        function showError(error) {
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    alert('User denied the request for Geolocation.');
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert('Location information is unavailable.');
+                    break;
+                case error.TIMEOUT:
+                    alert('The request to get user location timed out.');
+                    break;
+                case error.UNKNOWN_ERROR:
+                    alert('An unknown error occurred.');
+                    break;
+            }
         }
     </script>
 </head>
 <body>
-<h1>Hello, Flutter!</h1>
-<p>This is an example HTML file loaded into a WebView in a Flutter app.</p>
-<button onclick="sendToFlutter()">Send Message to Flutter</button>
+    <h1>Get Device Coordinates</h1>
+    <p>This example demonstrates how to get the current location from an Android or iOS device when the app is running inside a WebView.</p>
+    <button onclick="getCoordinates()">Get Coordinates</button>
 </body>
 </html>
+
+
     
     """;
