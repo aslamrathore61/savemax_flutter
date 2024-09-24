@@ -1,14 +1,15 @@
 class Config {
 
 
- // production
- static const String menuUrl= 'https://api.savemax.com/userservice/api/configs/';
- static const String HOME_URL = "https://savemax.com/";
+  // production
+  // static const String menuUrl= 'https://api.savemax.com/userservice/api/configs/';
+  //static const String HOME_URL = "https://savemax.com/";
+  // static const String HOME_URL = "http://172.17.10.67:3000/";
 
- // uat
- // static const String menuUrl = 'https://uatapi.savemax.com/userservice/api/configs/';
- // static const String HOME_URL = "https://uat1.savemax.com/";
- // static const String HOME_URL = "http://192.168.1.98:3000/";
+  // uat
+  static const String menuUrl = 'https://uatapi.savemax.com/userservice/api/configs/';
+  static const String HOME_URL = "https://uat2.savemax.com/";
+  // static const String HOME_URL = "http://192.168.1.98:3000/";
 
 
  //profile menu id
@@ -56,13 +57,13 @@ class Config {
   static const String REQUEST_APP_VERSION = "requestAppVersion";
   static const String LANUAGE_ID = "language_ID";
   static const String LANUAGE_URL = "language_url";
- static const String ANDROID_VERSION = "android_version";
- static const String IOS_VERSION = "ios_version";
- static const String isMaintenance = "isMaintenance";
- static const String imageURL = "imageURL";
+  static const String ANDROID_VERSION = "android_version";
+  static const String IOS_VERSION = "ios_version";
+  static const String isMaintenance = "isMaintenance";
+  static const String imageURL = "imageURL";
 
 
- static const String UpdateCityName = "UpdateCityName";
+  static const String UpdateCityName = "UpdateCityName";
 
 
 }

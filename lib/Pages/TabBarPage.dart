@@ -45,6 +45,7 @@ import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
+import 'package:geolocator/geolocator.dart' as geolocator;
 
 /// Flutter code sample for [TabBar].
 
@@ -125,7 +126,7 @@ class _TabBarPageState extends State<TabBarPage>
     // Get any messages which caused the application to open from
     // a terminated state.
     RemoteMessage? initialMessage =
-        await FirebaseMessaging.instance.getInitialMessage();
+    await FirebaseMessaging.instance.getInitialMessage();
 
     // If the message also contains a data property with a "type" of "chat",
     // navigate to a chat screen
@@ -279,14 +280,14 @@ class _TabBarPageState extends State<TabBarPage>
 
     switch (state) {
       case AppLifecycleState.inactive:
-        // App is inactive
+      // App is inactive
         print('AppLifecycleState $state');
         break;
       case AppLifecycleState.hidden:
         print('AppLifecycleState $state');
         break;
       case AppLifecycleState.paused:
-        // App is
+      // App is
         print('AppLifecycleState $state');
         break;
       case AppLifecycleState.resumed:
@@ -431,7 +432,7 @@ class _TabBarPageState extends State<TabBarPage>
         if (redirectwihtToken.contains(_id)) {
           print('userInfoDetails ${_userInfo?.toJson()}');
           print('launchURL $url${widget.userInfo?.token}');
-        //  final token = widget.userInfo?.token ?? _userInfo?.token;
+          //  final token = widget.userInfo?.token ?? _userInfo?.token;
           final token = _userInfo?.token ??  widget.userInfo?.token;
           _launchUrl(token != null ? '$url $token' : url);
         } else {
@@ -554,7 +555,7 @@ class _TabBarPageState extends State<TabBarPage>
                                     onTap: () {
                                       setState(() {
                                         isProfileMenuVisible =
-                                            !isProfileMenuVisible;
+                                        !isProfileMenuVisible;
                                       });
                                     },
                                     child: Padding(
@@ -562,13 +563,13 @@ class _TabBarPageState extends State<TabBarPage>
                                           top: 12, left: 12, bottom: 4),
                                       child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.start,
+                                        MainAxisAlignment.start,
                                         children: [
                                           CircleAvatarWithDefaultImage(
                                             imageUrl:
-                                                '${profileResponse?.imageUrl ?? ''}',
+                                            '${profileResponse?.imageUrl ?? ''}',
                                             defaultImageUrl:
-                                                'assets/images/profileimage.png',
+                                            'assets/images/profileimage.png',
                                             radius: 20.0,
                                           ),
                                           SizedBox(width: 10),
@@ -601,7 +602,7 @@ class _TabBarPageState extends State<TabBarPage>
                                       shrinkWrap: true,
                                       padding: const EdgeInsets.only(left: 8),
                                       itemCount:
-                                          widget.nativeItem.profile?.length,
+                                      widget.nativeItem.profile?.length,
                                       itemBuilder:
                                           (BuildContext context, int index) {
                                         return ProfileMenuItem(
@@ -621,15 +622,15 @@ class _TabBarPageState extends State<TabBarPage>
                                               await _webViewController
                                                   .clearCache();
                                               final cookieManager =
-                                                  WebViewCookieManager();
+                                              WebViewCookieManager();
                                               cookieManager.clearCookies();
                                               await _webViewController
                                                   .clearLocalStorage();
 
                                               // clear user info
                                               var box =
-                                                  await Hive.openBox<UserInfo>(
-                                                      Config.USER_INFO_BOX);
+                                              await Hive.openBox<UserInfo>(
+                                                  Config.USER_INFO_BOX);
                                               await box
                                                   .delete(Config.USER_INFO_KEY);
 
@@ -664,14 +665,14 @@ class _TabBarPageState extends State<TabBarPage>
                                   selectedLanguageID: mSelectedLanguageID,
                                   selectedLanguageURL: mSelectedLanguageURL,
                                   parenturl:
-                                      widget.nativeItem.side![index].uRL!,
+                                  widget.nativeItem.side![index].uRL!,
                                   parentID: widget.nativeItem.side![index].id!,
                                   base64Icon:
-                                      widget.nativeItem.side![index].icon!,
+                                  widget.nativeItem.side![index].icon!,
                                   base64IconMenu:
-                                      widget.nativeItem.side![index].menuIcon!,
+                                  widget.nativeItem.side![index].menuIcon!,
                                   subList:
-                                      widget.nativeItem.side![index].subList!,
+                                  widget.nativeItem.side![index].subList!,
                                   title: widget.nativeItem.side![index].title!,
                                   onTap: (String url, String id,
                                       String icon) async {
@@ -738,68 +739,68 @@ class _TabBarPageState extends State<TabBarPage>
               ),
               body: IsInternetConnected == false
                   ? Center(
-                      child: NoInternetConnectionPage(
-                        tryAgain: _checkInitialConnectivity,
-                      ),
-                    )
+                child: NoInternetConnectionPage(
+                  tryAgain: _checkInitialConnectivity,
+                ),
+              )
                   : Container(
-                      color: Color(0xe8f3f4f8),
-                      padding: EdgeInsets.only(top: _statusBarHeight),
-                      // margin: EdgeInsets.only(top: _statusBarHeight),
-                      child: WebViewWidget(
-                        controller: _webViewController
-                          //  ..loadRequest(Uri.parse(deepLinkingURL))
-                          ..enableZoom(false)
-                          // ..setOnConsoleMessage((JavaScriptConsoleMessage message) {
-                          //   print("ddd [${message.level.name}] ${message.message}");
-                          // })
-                          ..setJavaScriptMode(JavaScriptMode.unrestricted)
-                          ..setBackgroundColor(const Color(0x00000000))
-                          ..setNavigationDelegate(
-                            NavigationDelegate(
-                              onProgress: (int progress) {
-                                print('progress $progress');
-                              },
-                              onPageStarted: (String url) {
-                                print('onPageStarted $url');
-                                setState(() {
-                                  if (url == Config.HOME_URL) {
-                                    _tabController.index = 0;
-                                  } else if (url.contains('buy')) {
-                                    _tabController.index = 1;
-                                  } else if (url.contains('rent')) {
-                                    _tabController.index = 2;
-                                  } else if (url.contains('\$999')) {
-                                    _tabController.index = 3;
-                                  }
-                                });
-                              },
-                              onPageFinished: (String url) {
-                                print('onPageFinished $url');
+                color: Color(0xe8f3f4f8),
+                padding: EdgeInsets.only(top: _statusBarHeight),
+                // margin: EdgeInsets.only(top: _statusBarHeight),
+                child: WebViewWidget(
+                  controller: _webViewController
+                  //  ..loadRequest(Uri.parse(deepLinkingURL))
+                    ..enableZoom(false)
+                  // ..setOnConsoleMessage((JavaScriptConsoleMessage message) {
+                  //   print("ddd [${message.level.name}] ${message.message}");
+                  // })
+                    ..setJavaScriptMode(JavaScriptMode.unrestricted)
+                    ..setBackgroundColor(const Color(0x00000000))
+                    ..setNavigationDelegate(
+                      NavigationDelegate(
+                        onProgress: (int progress) {
+                          print('progress $progress');
+                        },
+                        onPageStarted: (String url) {
+                          print('onPageStarted $url');
+                          setState(() {
+                            if (url == Config.HOME_URL) {
+                              _tabController.index = 0;
+                            } else if (url.contains('buy')) {
+                              _tabController.index = 1;
+                            } else if (url.contains('rent')) {
+                              _tabController.index = 2;
+                            } else if (url.contains('\$999')) {
+                              _tabController.index = 3;
+                            }
+                          });
+                        },
+                        onPageFinished: (String url) {
+                          print('onPageFinished $url');
 
-                                String value = "";
-                                setState(() {
-                                  if (url.contains('buy')) {
-                                    extractCityName(url);
-                                    _tabController.index = 1;
-                                  } else if (url.contains('rent')) {
-                                    extractCityName(url);
-                                  }
-                                });
+                          String value = "";
+                          setState(() {
+                            if (url.contains('buy')) {
+                              extractCityName(url);
+                              _tabController.index = 1;
+                            } else if (url.contains('rent')) {
+                              extractCityName(url);
+                            }
+                          });
 
-                                print('ValueExtract : $value');
-                              },
-                              onWebResourceError: (WebResourceError error) {
-                                print(
-                                    "errorssssss: ${error.errorCode} ${error.description}");
+                          print('ValueExtract : $value');
+                        },
+                        onWebResourceError: (WebResourceError error) {
+                          print(
+                              "errorssssss: ${error.errorCode} ${error.description}");
 
-                                if (error.errorCode == -2) {
-                                  setState(() {
-                                    IsInternetConnected = false;
-                                  });
-                                }
+                          if (error.errorCode == -2) {
+                            setState(() {
+                              IsInternetConnected = false;
+                            });
+                          }
 
-                                /* print('onWebResourceError ${error.errorType} ${error.errorCode} ${error.description}');
+                          /* print('onWebResourceError ${error.errorType} ${error.errorCode} ${error.description}');
 
                                             if (error.errorCode == -2) {
                                             } else if (error.errorCode == -8) {
@@ -807,28 +808,28 @@ class _TabBarPageState extends State<TabBarPage>
                                             }else if(error.errorCode == -999) {
                                             }
                                           */
-                              },
-                              onHttpError: (HttpResponseError error) {
-                                print('httpResponseError $error');
-                              },
-                              onNavigationRequest: (NavigationRequest request) {
+                        },
+                        onHttpError: (HttpResponseError error) {
+                          print('httpResponseError $error');
+                        },
+                        onNavigationRequest: (NavigationRequest request) {
 
-                                final url = request.url;
-                                print("launchUrlll $url");
-                                if(url.contains("https://savemax.com/blogs/")) {
-                                  _launchUrl(url);
-                                  return NavigationDecision.prevent;
-                                }
+                          final url = request.url;
+                          print("launchUrlll $url");
+                          if(url.contains("https://savemax.com/blogs/")) {
+                            _launchUrl(url);
+                            return NavigationDecision.prevent;
+                          }
 
-                                if(url.contains(Config.HOME_URL) || url.contains("https://www.youtube.com/embed") || url.contains("https://form.jotform.com")) {
-                                  return NavigationDecision.navigate;
-                                }else {
-                                  _launchUrl(url);
-                                  return NavigationDecision.prevent;
-                                }
+                          if(url.contains(Config.HOME_URL) || url.contains("https://www.youtube.com/embed") || url.contains("https://form.jotform.com")) {
+                            return NavigationDecision.navigate;
+                          }else {
+                            _launchUrl(url);
+                            return NavigationDecision.prevent;
+                          }
 
 
-                              /*  print('onNavigationRequest ${request.url}');
+                          /*  print('onNavigationRequest ${request.url}');
                                 // Handle mailto links
                                 if (url.startsWith('mailto:') ||
                                     url.contains('UCsj05jLd-DMLhk_gqpZDGeA')) {
@@ -867,11 +868,11 @@ class _TabBarPageState extends State<TabBarPage>
                                 }
 
                                 return NavigationDecision.navigate;*/
-                              },
-                            ),
-                          ),
+                        },
                       ),
                     ),
+                ),
+              ),
               bottomNavigationBar: AbsorbPointer(
                 absorbing: _isGestureDisabled, // Disable gestures when true
                 child: Container(
@@ -901,21 +902,21 @@ class _TabBarPageState extends State<TabBarPage>
                     splashFactory: NoSplash.splashFactory,
                     onTap: (index) {
 
-                    if (!_isGestureDisabled) {
-                      final url = widget.nativeItem.bottom![index].uRL!;
-                      _onTabTapped(index, url, widget.nativeItem.bottom![index].id!);
+                      if (!_isGestureDisabled) {
+                        final url = widget.nativeItem.bottom![index].uRL!;
+                        _onTabTapped(index, url, widget.nativeItem.bottom![index].id!);
 
-                      setState(() {
-                        _isGestureDisabled = true; // Disable gestures
-                      });
-
-                      Timer(Duration(seconds: 1), () {
                         setState(() {
-                          _isGestureDisabled = false; // Re-enable gestures after 5 seconds
+                          _isGestureDisabled = true; // Disable gestures
                         });
-                      });
 
-                    }
+                        Timer(Duration(seconds: 1), () {
+                          setState(() {
+                            _isGestureDisabled = false; // Re-enable gestures after 5 seconds
+                          });
+                        });
+
+                      }
 
                     },
                     tabs: widget.nativeItem.bottom!.map((item) {
@@ -927,7 +928,7 @@ class _TabBarPageState extends State<TabBarPage>
                           width: 24.0,
                           height: 24.0,
                           color: _tabController.index ==
-                                  widget.nativeItem.bottom!.indexOf(item)
+                              widget.nativeItem.bottom!.indexOf(item)
                               ? Colors.red
                               : Colors.black,
                         ),
@@ -964,20 +965,20 @@ class _TabBarPageState extends State<TabBarPage>
     webViewController.removeJavaScriptChannel('FlutterChannel');
     webViewController.addJavaScriptChannel('FlutterChannel',
         onMessageReceived: (message) async {
-      print('FlutterChannelDetails ${message.message}');
-      try {
-        var data = jsonDecode(message.message);
-        if (data is Map<String, dynamic>) {
-          _handleJsonMessageUserInfo(data);
-        } else {
-          print('ReceivedNonJsonMessage: ${message.message}');
-        }
-      } catch (e) {
-        // Handle as a plain string message
-        print('ReceivedStringMessage: ${message.message}');
-        _handleStringMessage(message.message, webViewController);
-      }
-    });
+          print('FlutterChannelDetails ${message.message}');
+          try {
+            var data = jsonDecode(message.message);
+            if (data is Map<String, dynamic>) {
+              _handleJsonMessageUserInfo(data);
+            } else {
+              print('ReceivedNonJsonMessage: ${message.message}');
+            }
+          } catch (e) {
+            // Handle as a plain string message
+            print('ReceivedStringMessage: ${message.message}');
+            _handleStringMessage(message.message, webViewController);
+          }
+        });
   }
 
   Future<void> _handleJsonMessageUserInfo(Map<String, dynamic> data) async {
@@ -987,7 +988,7 @@ class _TabBarPageState extends State<TabBarPage>
         shareURL(data['text'], data['url']);
         //title
       } else if (data['flutter'] == 'profile') {
-       /* if (!profileUpdated) {
+        /* if (!profileUpdated) {
           profileUpdated = true;
           setState(() {
             print('thisOneGetCall ${profileResponse?.name}');
@@ -1024,6 +1025,7 @@ class _TabBarPageState extends State<TabBarPage>
 
   Future<void> _handleStringMessage(
       String message, WebViewController webViewController) async {
+    print('needtocheckMess $message');
     if (message == "getBottomToolbar") {
       final packageInfo = await PackageInfo.fromPlatform();
       final versionNumber = packageInfo.version;
@@ -1047,9 +1049,32 @@ class _TabBarPageState extends State<TabBarPage>
       print('fcmToken : $fcmToken');
       webViewController.runJavaScript('setToken("$fcmToken")');
     } else if (message == "GetLocation") {
-      print('getcalllll');
+      print("locationCheck Tap");
       setLatLongToWeb(webViewController, context);
+    }else if(message == "InitialLocation") {
+      print("locationCheck Inital");
+
+      setInitialLocation(webViewController, context);
+
     }
+  }
+
+
+  Future<void> setInitialLocation(WebViewController webViewController,BuildContext context) async {
+    Position? position = await geolocator.Geolocator.getCurrentPosition(
+        desiredAccuracy: geolocator.LocationAccuracy.low);
+
+
+
+    print("LatLongVlaue  lat : ${position.latitude} -- lng : ${position.longitude}");
+
+    String jsCode = '{"latitude": "${position?.latitude}", "longitude": "${position?.longitude}"}';
+
+
+
+    webViewController.runJavaScript('getLatLong(`$jsCode`)');
+
+
   }
 
   Future<void> setLatLongToWeb(
@@ -1088,13 +1113,11 @@ class _TabBarPageState extends State<TabBarPage>
     }
     Position? position = await Geolocator.getLastKnownPosition();
 
-    print(
-        'CurrentLatLong - Latitude: ${position?.latitude}, Longitude: ${position?.longitude}');
+    print('CurrentLatLong - Latitude: ${position?.latitude}, Longitude: ${position?.longitude}');
 
     if (position?.latitude != null && position?.longitude != null) {
       print('locationTest 5');
-      String jsCode =
-          '{"latitude": "${position?.latitude}", "longitude": "${position?.longitude}"}';
+      String jsCode = '{"latitude": "${position?.latitude}", "longitude": "${position?.longitude}"}';
       webViewController.runJavaScript('getLatLong(`$jsCode`)');
     }
   }
@@ -1315,8 +1338,8 @@ class _TabBarPageState extends State<TabBarPage>
       await picker
           .pickImage(source: ImageSource.camera, imageQuality: 25)
           .then((value) async => {
-                if (value != null) {cropImageCall(File(value.path), imageType)}
-              });
+        if (value != null) {cropImageCall(File(value.path), imageType)}
+      });
     } on PlatformException catch (e) {
       if (e.code == 'camera_access_denied') {
         showPermissionSettingsDialog(context,
@@ -1348,7 +1371,7 @@ class _TabBarPageState extends State<TabBarPage>
     List<MultipartFile> files = [];
     for (XFile image in imageFiles) {
       String formattedDate =
-          DateFormat('yyyy-MM-dd HHmmss').format(DateTime.now());
+      DateFormat('yyyy-MM-dd HHmmss').format(DateTime.now());
       String name = 'properties_$formattedDate.png';
       files.add(await MultipartFile.fromFile(image.path, filename: name));
     }
