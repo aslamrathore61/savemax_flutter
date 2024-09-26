@@ -3,7 +3,7 @@ class Config {
 
   // production
   // static const String menuUrl= 'https://api.savemax.com/userservice/api/configs/';
-  //static const String HOME_URL = "https://savemax.com/";
+  // static const String HOME_URL = "https://savemax.com/";
   // static const String HOME_URL = "http://172.17.10.67:3000/";
 
   // uat
@@ -61,6 +61,7 @@ class Config {
   static const String IOS_VERSION = "ios_version";
   static const String isMaintenance = "isMaintenance";
   static const String imageURL = "imageURL";
+  static const String LOCATION_PERMISSION = "LOCATION_PERMISSION";
 
 
   static const String UpdateCityName = "UpdateCityName";

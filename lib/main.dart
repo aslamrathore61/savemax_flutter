@@ -11,12 +11,14 @@ import 'package:savemax_flutter/model/user_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Component/UpdateMaintainance/ForceUpdateScreen.dart';
 import 'Component/UpdateMaintainance/MaintenanceScreen.dart';
+import 'Config.dart';
 import 'Network/ApiProvider.dart';
 import 'Pages/SplashScreen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'Pages/TabBarPage.dart';
+import 'SharePrefFile.dart';
 import 'model/native_item.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -74,6 +76,7 @@ Future<void> main() async {
   }
 
   await getLocationInitialTime();
+
 
   bool result = await InternetConnection().hasInternetAccess;
 

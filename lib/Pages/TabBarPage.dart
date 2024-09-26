@@ -239,6 +239,7 @@ class _TabBarPageState extends State<TabBarPage>
     await platform.invokeMethod('AppIconChange', message);
   }
 
+
   @override
   void deactivate() {
     //   print('deactivate');
@@ -1031,8 +1032,7 @@ class _TabBarPageState extends State<TabBarPage>
       final versionNumber = packageInfo.version;
       final bundleNumber = packageInfo.buildNumber;
       print('versionNumber $versionNumber : bundleNumber $bundleNumber');
-      String jsCode =
-          '{"versionNumber": "$versionNumber", "bundleNumber": "$bundleNumber"}';
+      String jsCode = '{"versionNumber": "$versionNumber", "bundleNumber": "$bundleNumber"}';
       webViewController.runJavaScript('getVersion(`$jsCode`)');
 
       //  String jsCode = '{"logoutvalue"}';
@@ -1091,16 +1091,29 @@ class _TabBarPageState extends State<TabBarPage>
     }
 
     LocationPermission permission = await Geolocator.checkPermission();
+    final status = await Permission.location.status;
 
-    print('locationTest $permission');
+    print('locationTest 1 $permission');
 
     if (permission == LocationPermission.denied) {
-      print('locationTest 2');
+      print('locationTest 22');
+
       permission = await Geolocator.requestPermission();
-      print("checkLocation $permission");
+      print('LocationTestD $permission');
       if(permission == LocationPermission.deniedForever) {
-        showLocationPermissionDialog(context);
-        return;
+        print('locationTest 2');
+
+        int locationDeniedCount = await getPrefIntegerValue(Config.LOCATION_PERMISSION);
+
+        if(locationDeniedCount > 0) {
+          showLocationPermissionDialog(context);
+          return;
+        }else{
+          await setPrefIntegerValue(Config.LOCATION_PERMISSION, 1);
+          return;
+        }
+      }else if(permission == LocationPermission.denied){
+        await setPrefIntegerValue(Config.LOCATION_PERMISSION, 0);
       }
     } else if (permission == LocationPermission.deniedForever) {
       print('locationTest 3');
@@ -1121,6 +1134,7 @@ class _TabBarPageState extends State<TabBarPage>
       webViewController.runJavaScript('getLatLong(`$jsCode`)');
     }
   }
+
 
   Future<void> _exitApp(BuildContext context) async {
     String CurrentUrl = "";
@@ -1165,8 +1179,9 @@ class _TabBarPageState extends State<TabBarPage>
             child: Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
+              await setPrefIntegerValue(Config.LOCATION_PERMISSION, 0);
               openAppSettings();
             },
             child: Text('Settings'),
