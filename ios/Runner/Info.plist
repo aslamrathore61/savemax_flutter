@@ -75,5 +75,72 @@
    <false/>
    <key>io.flutter.embedded_views_preview</key>
    <true/>
+
+
+ <key>FlutterDeepLinkingEnabled</key>
+<true/>
+
+    <key>CFBundleURLTypes</key>
+<array>
+<dict>
+<key>CFBundleTypeRole</key>
+<string>Editor</string>
+<key>CFBundleURLName</key>
+<string>com.app.savemax</string> <!-- Your app's bundle ID -->
+<key>CFBundleURLSchemes</key>
+<array>
+<string>savemaxdeep</string> <!-- Your custom URI scheme -->
+</array>
+</dict>
+</array>
+
+    <key>branch_key</key>
+<dict>
+<key>live</key>
+<string>key_live_gwjT91JWe2Dwh6vFIuJi6nggAAkdASa2</string> <!-- Your live Branch key -->
+<key>test</key>
+<string>secret_live_jvNPA4BKOjb9SzTaOPAHUELuQzCIhVhX</string> <!-- Your test Branch key -->
+</dict>
+
+    <key>branch_universal_link_domains</key>
+<array>
+<string>savemax.app.link</string> <!-- Your universal link domain -->
+<string>savemax-alternate.app.link</string> <!-- Alternate universal link domain, if any -->
+<!-- Replace with your actual domains from the Branch dashboard -->
+</array>
+
+  <key>FlutterDeepLinkingEnabled</key>
+ <true/>
+
+     <key>CFBundleURLTypes</key>
+ <array>
+ <dict>
+ <key>CFBundleTypeRole</key>
+ <string>Editor</string>
+ <key>CFBundleURLName</key>
+ <string>com.app.savemax</string> <!-- Your app's bundle ID -->
+ <key>CFBundleURLSchemes</key>
+ <array>
+ <string>savemaxdeep</string> <!-- Your custom URI scheme -->
+ </array>
+ </dict>
+ </array>
+
+     <key>branch_key</key>
+ <dict>
+ <key>live</key>
+ <string>key_live_gwjT91JWe2Dwh6vFIuJi6nggAAkdASa2</string> <!-- Your live Branch key -->
+ <key>test</key>
+ <string>secret_live_jvNPA4BKOjb9SzTaOPAHUELuQzCIhVhX</string> <!-- Your test Branch key -->
+ </dict>
+
+     <key>branch_universal_link_domains</key>
+ <array>
+ <string>savemax.app.link</string> <!-- Your universal link domain -->
+ <string>savemax-alternate.app.link</string> <!-- Alternate universal link domain, if any -->
+ <!-- Replace with your actual domains from the Branch dashboard -->
+ </array>
+
+
 </dict>
 </plist>
