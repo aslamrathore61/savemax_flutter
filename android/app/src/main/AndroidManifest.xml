@@ -101,9 +101,9 @@
 
         <!-- Branch init -->
         <!-- REPLACE `BranchKey` with the value from your Branch Dashboard -->
-        <meta-data android:name="io.branch.sdk.BranchKey" android:value="key_live_mEoN0E4ol4PZ2sVUOkzwbopozFkaEtpS" />
+        <meta-data android:name="io.branch.sdk.BranchKey" android:value="key_live_gwjT91JWe2Dwh6vFIuJi6nggAAkdASa2" />
         <!-- REPLACE `BranchKey.test` with the value from your Branch Dashboard -->
-        <meta-data android:name="io.branch.sdk.BranchKey.test" android:value="secret_live_G2AAHICkO0Dl2sQtDEIZnlgkikhdfR06" />
+        <meta-data android:name="io.branch.sdk.BranchKey.test" android:value="secret_live_jvNPA4BKOjb9SzTaOPAHUELuQzCIhVhX" />
         <!-- Set to `true` to use `BranchKey.test` -->
         <meta-data android:name="io.branch.sdk.TestMode" android:value="false" />
 

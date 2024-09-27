@@ -10,6 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/svg.dart';
@@ -52,8 +53,9 @@ import 'package:geolocator/geolocator.dart' as geolocator;
 class TabBarPage extends StatefulWidget {
   final NativeItem nativeItem;
   late final UserInfo? userInfo;
+  final String branchUrl;
 
-  TabBarPage({required this.nativeItem, required this.userInfo});
+  TabBarPage({required this.nativeItem, required this.userInfo, required this.branchUrl});
 
   @override
   State<TabBarPage> createState() => _TabBarPageState();
@@ -172,14 +174,13 @@ class _TabBarPageState extends State<TabBarPage>
       deepLinkingURL = Config.HOME_URL;
     }
 
-    print('loadrequest 2');
+  //  print('loadrequest 2');
     CommonLoadRequest(deepLinkingURL, _webViewController, context, "1");
   }
 
   void CommonLoadRequest(String url, WebViewController webViewController,
       BuildContext _context, String debugValue) {
-    print('debugValue : $debugValue');
-
+   // print('debugValue : $debugValue');
     if (IsInternetConnected) {
       javaScriptCall(webViewController, _context);
       // _webViewController.loadHtmlString(html);
@@ -187,6 +188,7 @@ class _TabBarPageState extends State<TabBarPage>
     }
   }
 
+/*
   Future<void> initUniLinks() async {
     try {
       _initialLink = (await getInitialLink())!;
@@ -199,6 +201,7 @@ class _TabBarPageState extends State<TabBarPage>
       // _initialLink = null;
     }
   }
+*/
 
   void _internetConnectionStatus() {
     InternetConnection().onStatusChange.listen((InternetStatus status) {
@@ -322,7 +325,7 @@ class _TabBarPageState extends State<TabBarPage>
   @override
   void initState() {
     super.initState();
-    initUniLinks();
+   // initUniLinks();
     WidgetsBinding.instance.addObserver(this);
 
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -352,6 +355,31 @@ class _TabBarPageState extends State<TabBarPage>
 
     _checkInitialConnectivity();
     setupInteractedMessage();
+
+
+    // this one will get call when not in killed mode
+    FlutterBranchSdk.initSession().listen((deepLinkData) {
+      // print("deepLinkData $deepLinkingURL");
+      // Handle any incoming deep link data here
+      if (deepLinkData.containsKey('+clicked_branch_link') &&
+          deepLinkData['+clicked_branch_link'] == true) {
+        String pageUrl = deepLinkData['url']; // Retrieve the custom data you sent
+        print("pageUrl : $pageUrl");
+        _tabController.index = 0;
+        CommonLoadRequest(pageUrl, _webViewController, context, "4");
+        // Handle navigation or other actions based on the deep link
+      }
+    });
+
+    // Add a delay before loading the branchUrl in killed mode
+    Future.delayed(Duration(seconds: 5), () {
+      if (widget.branchUrl.isNotEmpty) {
+        Fluttertoast.showToast(msg: "InAppWebView 00 ${widget.branchUrl}");
+        CommonLoadRequest(widget.branchUrl, _webViewController, context, "4");
+      }
+    });
+
+
     getSelectedLanguageID();
 
     _tabController = TabController(
@@ -986,7 +1014,7 @@ class _TabBarPageState extends State<TabBarPage>
     try {
       if (data['action'] == 'Share') {
         print('actionshare ${data['action']}');
-        shareURL(data['text'], data['url']);
+        shareURL( data['url'], data['text']);
         //title
       } else if (data['flutter'] == 'profile') {
         /* if (!profileUpdated) {
@@ -1018,11 +1046,53 @@ class _TabBarPageState extends State<TabBarPage>
   }
 
   Future<void> shareURL(String url, String text) async {
-    ShareResult shareResult = await Share.share('$text\n$url');
-    /*  if(shareResult.status == ShareResultStatus.success) {
-   }
-*/
+
+    String branchLink = await generateBranchLink(url,text);
+
+    Share.share('$branchLink');
+
+ //  ShareResult shareResult = await Share.share('$text\n$url');
+
+
   }
+
+
+  Future<String> generateBranchLink(String pageUrl,String text) async {
+    BranchUniversalObject buo = await createBranchUniversalObject(pageUrl, text);
+
+    BranchLinkProperties linkProperties = BranchLinkProperties(
+      channel: 'facebook',
+      feature: 'sharing',
+    );
+
+    BranchResponse response = await FlutterBranchSdk.getShortUrl(
+      buo: buo,
+      linkProperties: linkProperties,
+    );
+
+    if (response.success) {
+      return response.result; // This is the Branch link
+    } else {
+      return pageUrl; // Fallback to the original URL if something goes wrong
+    }
+  }
+
+
+  Future<BranchUniversalObject> createBranchUniversalObject(String pageUrl, String text) async {
+    print('checkPageUrl $pageUrl');
+    BranchUniversalObject buo = BranchUniversalObject(
+      canonicalIdentifier: 'content/12345',
+      canonicalUrl: text,
+      // title: 'Page Title',
+      contentDescription: text,
+      imageUrl: 'https://savemax.com/_next/image?url=https%3A%2F%2Fsavemax.com%2Fimages%2FtrrebPropertyImage%2Fsep_2024%2FE9306730-1.jpeg&w=1080&q=75',
+      contentMetadata: BranchContentMetaData()
+        ..addCustomMetadata('url', pageUrl),
+    );
+
+    return buo;
+  }
+
 
   Future<void> _handleStringMessage(
       String message, WebViewController webViewController) async {

@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
@@ -26,10 +30,34 @@ import 'firebase_options.dart';
 FlutterLocalNotificationsPlugin? flutterLocalNotificationsPlugin;
 AndroidNotificationChannel? channel;
 
+
+Future<String> initBranchSession() async {
+  Completer<String> completer = Completer<String>();
+  FlutterBranchSdk.initSession().listen((deepLinkData) {
+    if (!completer.isCompleted) {
+      if (deepLinkData.containsKey('+clicked_branch_link') &&
+          deepLinkData['+clicked_branch_link'] == true) {
+        String pageUrl = deepLinkData['url']; // Retrieve the custom data you sent
+        print("pageUrl : $pageUrl");
+        completer.complete(pageUrl);
+      } else {
+        // If no valid deep link data is found, complete with an empty string or null
+        completer.complete('');
+      }
+    }
+  });
+
+  return completer.future;
+}
+
+
+
 Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialize the Branch SDK
+  FlutterBranchSdk.init();
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -120,6 +148,9 @@ Future<void> main() async {
     statusBarColor: Colors.yellow, // Set the status bar color to yellow
   ));
 
+  String branchUrl = await initBranchSession();
+
+
   runApp( MaterialApp(
     debugShowCheckedModeBanner: false,
     themeMode: ThemeMode.light, // Always use light theme
@@ -142,7 +173,7 @@ Future<void> main() async {
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
         final UserInfo? userInfo = args['userInfo'];
         final NativeItem nativeItem = args['nativeItem'];
-        return TabBarPage(nativeItem: nativeItem, userInfo: userInfo,);
+        return TabBarPage(nativeItem: nativeItem, userInfo: userInfo, branchUrl: branchUrl );
       },
       '/forceUpdatePage': (context) {
         return ForceUpdateScreen();
