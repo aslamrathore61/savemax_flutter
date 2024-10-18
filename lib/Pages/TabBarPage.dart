@@ -363,7 +363,7 @@ class _TabBarPageState extends State<TabBarPage>
       // Handle any incoming deep link data here
       if (deepLinkData.containsKey('+clicked_branch_link') &&
           deepLinkData['+clicked_branch_link'] == true) {
-        String pageUrl = deepLinkData['url']; // Retrieve the custom data you sent
+        String pageUrl = deepLinkData['\$desktop_url']; // Escape the $ character
         print("pageUrl : $pageUrl");
         _tabController.index = 0;
         CommonLoadRequest(pageUrl, _webViewController, context, "4");
@@ -374,7 +374,7 @@ class _TabBarPageState extends State<TabBarPage>
     // Add a delay before loading the branchUrl in killed mode
     Future.delayed(Duration(seconds: 5), () {
       if (widget.branchUrl.isNotEmpty) {
-        Fluttertoast.showToast(msg: "InAppWebView 00 ${widget.branchUrl}");
+      //  Fluttertoast.showToast(msg: "InAppWebView 00 ${widget.branchUrl}");
         CommonLoadRequest(widget.branchUrl, _webViewController, context, "4");
       }
     });
@@ -403,12 +403,10 @@ class _TabBarPageState extends State<TabBarPage>
   }
 
   Future<void> _onTabTapped(int index, String url, String _id) async {
-    print('idtest $_id');
     String updateurl = url;
 
     if (url.contains('buy') || url.contains('rent')) {
       final cityName = await getPrefStringValue(Config.UpdateCityName);
-      print('urlCityName $cityName');
 
       url = updateurl.replaceFirst('toronto', cityName);
     }
@@ -418,7 +416,6 @@ class _TabBarPageState extends State<TabBarPage>
       // Open the drawer if the last tab is selected
       _scaffoldKey.currentState?.openDrawer();
 
-      print('checkindext $index');
       // Set the tab controller index to the previous tab
       _tabController.index = _tabController.previousIndex;
     } else {
@@ -1047,9 +1044,12 @@ class _TabBarPageState extends State<TabBarPage>
 
   Future<void> shareURL(String url, String text) async {
 
-    String branchLink = await generateBranchLink(url,text);
+   // String branchLink = await generateBranchLink(url,text);
 
-    Share.share('$branchLink');
+    // now forntend side handle branch sdk
+   // String branchLink = await generateBranchLink("https://uat2.savemax.com/oh/agent-availability",text);
+
+    Share.share('$url');
 
  //  ShareResult shareResult = await Share.share('$text\n$url');
 

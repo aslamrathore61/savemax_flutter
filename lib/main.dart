@@ -37,7 +37,7 @@ Future<String> initBranchSession() async {
     if (!completer.isCompleted) {
       if (deepLinkData.containsKey('+clicked_branch_link') &&
           deepLinkData['+clicked_branch_link'] == true) {
-        String pageUrl = deepLinkData['url']; // Retrieve the custom data you sent
+        String pageUrl = deepLinkData['\$desktop_url']; // Escape the $ character
         print("pageUrl : $pageUrl");
         completer.complete(pageUrl);
       } else {

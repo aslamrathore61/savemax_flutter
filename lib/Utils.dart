@@ -5,8 +5,7 @@ import 'package:image_cropper/image_cropper.dart';
 Future<String?> cropImage(File imgFile) async {
   final croppedFile = await ImageCropper().cropImage(
       sourcePath: imgFile.path,
-      aspectRatioPresets: Platform.isAndroid
-          ? [
+    /*  aspectRatioPresets: Platform.isAndroid ? [
         CropAspectRatioPreset.square,
         CropAspectRatioPreset.ratio3x2,
         CropAspectRatioPreset.original,
@@ -22,7 +21,7 @@ Future<String?> cropImage(File imgFile) async {
         CropAspectRatioPreset.ratio5x4,
         CropAspectRatioPreset.ratio7x5,
         CropAspectRatioPreset.ratio16x9
-      ],
+      ],*/
       uiSettings: [
         AndroidUiSettings(
             toolbarTitle: "Image Cropper",
