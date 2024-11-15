@@ -26,7 +26,7 @@ import 'package:savemax_flutter/model/ProfileResponse.dart';
 import 'package:savemax_flutter/model/user_info.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uni_links/uni_links.dart';
+// import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -63,8 +63,7 @@ class TabBarPage extends StatefulWidget {
 
 /// [AnimationController]s can be created with `vsync: this` because of
 /// [TickerProviderStateMixin].
-class _TabBarPageState extends State<TabBarPage>
-    with TickerProviderStateMixin, WidgetsBindingObserver {
+class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin, WidgetsBindingObserver {
   // GlobalKey<_TabBarPageState> _key = GlobalKey();
 
   late final TabController _tabController;
@@ -117,7 +116,7 @@ class _TabBarPageState extends State<TabBarPage>
                 largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
                 channelShowBadge: true,
                 autoCancel: true,
-                icon: '@mipmap/ic_launcher_round',
+                icon: '@mipmap/ic_launcher_secondary_round',
               ),
             ),
             payload: action);
@@ -184,6 +183,10 @@ class _TabBarPageState extends State<TabBarPage>
     if (IsInternetConnected) {
       javaScriptCall(webViewController, _context);
       // _webViewController.loadHtmlString(html);
+
+      var username = "uat@savemax"; // Replace with actual username or obtain from user input
+      var password = "uat@54321"; // Replace with actual password or obtain from user input
+
       _webViewController.loadRequest(Uri.parse(url));
     }
   }
@@ -693,12 +696,9 @@ class _TabBarPageState extends State<TabBarPage>
                                   parenturl:
                                   widget.nativeItem.side![index].uRL!,
                                   parentID: widget.nativeItem.side![index].id!,
-                                  base64Icon:
-                                  widget.nativeItem.side![index].icon!,
-                                  base64IconMenu:
-                                  widget.nativeItem.side![index].menuIcon!,
-                                  subList:
-                                  widget.nativeItem.side![index].subList!,
+                                  base64Icon: widget.nativeItem.side![index].icon!,
+                                  base64IconMenu: widget.nativeItem.side![index].menuIcon!,
+                                  subList: widget.nativeItem.side![index].subList!,
                                   title: widget.nativeItem.side![index].title!,
                                   onTap: (String url, String id,
                                       String icon) async {
@@ -717,8 +717,7 @@ class _TabBarPageState extends State<TabBarPage>
 
                                     if (widget.nativeItem.side![index].id! ==
                                         Config.CURRENCY_ID) {
-                                      print(
-                                          'LanguageIDdd ${widget.nativeItem.side![index].id!}');
+                                      print('LanguageIDdd ${widget.nativeItem.side![index].id!}');
                                       print('LanguageID $url');
                                       mSelectedLanguageID = id;
                                       mSelectedLanguageURL = url;
@@ -837,6 +836,13 @@ class _TabBarPageState extends State<TabBarPage>
                         },
                         onHttpError: (HttpResponseError error) {
                           print('httpResponseError $error');
+                        },
+                        onHttpAuthRequest: (HttpAuthRequest request) async {
+
+                       //   request.onProceed;
+                          openDialog(request);
+
+                          print('onHttpAuthRequest');
                         },
                         onNavigationRequest: (NavigationRequest request) {
 
@@ -1042,6 +1048,11 @@ class _TabBarPageState extends State<TabBarPage>
     }
   }
 
+
+
+
+
+
   Future<void> shareURL(String url, String text) async {
 
    // String branchLink = await generateBranchLink(url,text);
@@ -1057,7 +1068,71 @@ class _TabBarPageState extends State<TabBarPage>
   }
 
 
-  Future<String> generateBranchLink(String pageUrl,String text) async {
+
+
+
+
+  Future<void> openDialog(HttpAuthRequest httpRequest) async {
+    final TextEditingController usernameTextController =
+    TextEditingController();
+    final TextEditingController passwordTextController =
+    TextEditingController();
+
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('${httpRequest.host}: ${httpRequest.realm ?? '-'}'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                TextField(
+                  decoration: const InputDecoration(labelText: 'Username'),
+                  autofocus: true,
+                  controller: usernameTextController,
+                ),
+                TextField(
+                  decoration: const InputDecoration(labelText: 'Password'),
+                  controller: passwordTextController,
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            // Explicitly cancel the request on iOS as the OS does not emit new
+            // requests when a previous request is pending.
+            TextButton(
+              onPressed: () {
+                httpRequest.onCancel();
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                httpRequest.onProceed(
+                  WebViewCredential(
+                    user: usernameTextController.text,
+                    password: passwordTextController.text,
+                  ),
+                );
+                Navigator.of(context).pop();
+              },
+              child: const Text('Authenticate'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+
+
+
+Future<String> generateBranchLink(String pageUrl,String text) async {
     BranchUniversalObject buo = await createBranchUniversalObject(pageUrl, text);
 
     BranchLinkProperties linkProperties = BranchLinkProperties(
@@ -1096,7 +1171,6 @@ class _TabBarPageState extends State<TabBarPage>
 
   Future<void> _handleStringMessage(
       String message, WebViewController webViewController) async {
-    print('needtocheckMess $message');
     if (message == "getBottomToolbar") {
       final packageInfo = await PackageInfo.fromPlatform();
       final versionNumber = packageInfo.version;
@@ -1108,10 +1182,8 @@ class _TabBarPageState extends State<TabBarPage>
       //  String jsCode = '{"logoutvalue"}';
       // webViewController.runJavaScript('getLogout(`$jsCode`)');
     } else if (message == "ProvideProfileImageFormData") {
-      print('ProvideProfileImageFormData');
       showOptions("profileImage");
     } else if (message == "ProvideListingImageFormData") {
-      print('ProvideListingImageFormData');
       showOptions("ListingImage");
     } else if (message == "GenerateFCMToken") {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -1119,11 +1191,8 @@ class _TabBarPageState extends State<TabBarPage>
       print('fcmToken : $fcmToken');
       webViewController.runJavaScript('setToken("$fcmToken")');
     } else if (message == "GetLocation") {
-      print("locationCheck Tap");
       setLatLongToWeb(webViewController, context);
     }else if(message == "InitialLocation") {
-      print("locationCheck Inital");
-
       setInitialLocation(webViewController, context);
 
     }
