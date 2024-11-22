@@ -8,7 +8,8 @@ class Config {
 
   // uat
   static const String menuUrl = 'https://uatapi.savemax.com/userservice/api/configs/';
-  static const String HOME_URL = "https://uat1.savemax.com/";
+  // static const String HOME_URL = "http://172.17.10.33:3000";
+ static const String HOME_URL = "https://uat2.savemax.com/";
   // static const String HOME_URL = "http://192.168.1.98:3000/";
 
 
@@ -27,6 +28,9 @@ class Config {
   static const String RWR_Events = "db3579dffc5b4fb984143fa55e411234";
   static const String My_Events = "db3579dffc5b4fb984143fa55e45690";
   static const String LOGOUT_ID = "db3579dffc5b4fb984143fa55e411344";
+
+  static const String OH_Admin = "fgr579dffc5b4fb984143fa55e411rtt";
+  static const String OH_Agent = "agt579dffc5b4fb984143fa55e411oha";
 
 
   static const String CURRENCY_ID = "494efec28a7144db969a26ad98da58bf";

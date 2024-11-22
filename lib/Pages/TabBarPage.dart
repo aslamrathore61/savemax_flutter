@@ -90,6 +90,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin, 
   bool isLoading = false;
   bool isAppInBackground = false;
   bool isKeyboardOpen = false;
+  int notificationCount = 0; // Replace this with your actual notification count.
 
   Future<void> setupInteractedMessage() async {
     // To handle messages while your application is in the foreground, listen to the onMessage stream
@@ -99,7 +100,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin, 
 
       if (notification != null && android != null && !kIsWeb) {
         String action = jsonEncode(message.data);
-        print('action $action');
+        print('actionData $action');
 
         flutterLocalNotificationsPlugin!.show(
             notification.hashCode,
@@ -429,10 +430,22 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin, 
       }
 
       // Load the URL for the selected tab
-      if (url.startsWith(Config.HOME_URL) ||
-          url.startsWith('https://savemax.com') ||
-          url.startsWith('https://uat1.savemax.com/')) {
-        if (url.isNotEmpty) {
+      if (url.startsWith(Config.HOME_URL) || url.startsWith('https://savemax.com') || url.startsWith('https://uat1.savemax.com/')) {
+
+
+      bool showNotifcaiotDetails = Utils.shouldShowNotificationDetails(
+        userDetailsAvailable: userDetailsAvaible,
+        userType: _userInfo?.userType,
+        itemId: _id,
+      );
+
+      if(showNotifcaiotDetails) {
+        url ="${Config.HOME_URL}/oh/notifications";
+      }
+
+      print('urlprintTest $url');
+
+      if (url.isNotEmpty) {
           Uri uri = Uri.parse(url);
           String segmentPath = uri.path + '?' + uri.query;
           deepLinkingURL = Config.HOME_URL + segmentPath;
@@ -715,8 +728,7 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin, 
                                       _index++;
                                     });
 
-                                    if (widget.nativeItem.side![index].id! ==
-                                        Config.CURRENCY_ID) {
+                                    if (widget.nativeItem.side![index].id! == Config.CURRENCY_ID) {
                                       print('LanguageIDdd ${widget.nativeItem.side![index].id!}');
                                       print('LanguageID $url');
                                       mSelectedLanguageID = id;
@@ -952,10 +964,57 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin, 
 
                     },
                     tabs: widget.nativeItem.bottom!.map((item) {
+                   //   print('itemTestPack ${item.toJson()}');
                       final svgBytes = base64Decode(item.icon!);
                       final svgString = utf8.decode(svgBytes);
+
+                      // for show notificatin  user should be login and  userType = agent / id should be match wiht $999 menu
+                     bool showNotifcaiotDetails = Utils.shouldShowNotificationDetails(
+                        userDetailsAvailable: userDetailsAvaible,
+                        userType: _userInfo?.userType,
+                        itemId: item.id!,
+                      );
+
+
                       return Tab(
-                        icon: SvgPicture.string(
+                        icon: showNotifcaiotDetails ? Stack(
+                          children: [
+                            SvgPicture.asset(
+                              'assets/icons/svg_notification.svg',
+                              width: 24.0,
+                              height: 24.0,
+                              color: _tabController.index ==
+                                  widget.nativeItem.bottom!.indexOf(item)
+                                  ? Colors.red
+                                  : Colors.black,
+                            ),
+                            if (notificationCount > 0) // Only show badge if count > 0
+                              Positioned(
+                                right: 0,
+                                top: 0,
+                                child: Container(
+                                 // padding: EdgeInsets.all(2.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  constraints: BoxConstraints(
+                                    minWidth: 16.0,
+                                    minHeight: 16.0,
+                                  ),
+                                  child: Text(
+                                    '$notificationCount',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 10.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ) : SvgPicture.string(
                           svgString,
                           width: 24.0,
                           height: 24.0,
@@ -964,8 +1023,33 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin, 
                               ? Colors.red
                               : Colors.black,
                         ),
-                        text: item.title,
+                        text: showNotifcaiotDetails ? "Alert" : item.title,
                       );
+
+
+                      /*      return Tab(
+                        icon: showNotifcaiotDetails ? SvgPicture.asset(
+                            'assets/icons/svg_notification.svg',
+                          width: 24.0,
+                          height: 24.0,
+                          color: _tabController.index ==
+                              widget.nativeItem.bottom!.indexOf(item)
+                              ? Colors.red
+                              : Colors.black,
+                        ) : SvgPicture.string(
+                          svgString,
+                          width: 24.0,
+                          height: 24.0,
+                          color: _tabController.index ==
+                              widget.nativeItem.bottom!.indexOf(item)
+                              ? Colors.red
+                              : Colors.black,
+                        ),
+                        text: showNotifcaiotDetails ? "Alert" : item.title,
+                      );
+*/
+
+
                     }).toList(),
                   ),
                 ),
@@ -1016,24 +1100,18 @@ class _TabBarPageState extends State<TabBarPage> with TickerProviderStateMixin, 
   Future<void> _handleJsonMessageUserInfo(Map<String, dynamic> data) async {
     try {
       if (data['action'] == 'Share') {
-        print('actionshare ${data['action']}');
         shareURL( data['url'], data['text']);
         //title
       } else if (data['flutter'] == 'profile') {
-        /* if (!profileUpdated) {
-          profileUpdated = true;
-          setState(() {
-            print('thisOneGetCall ${profileResponse?.name}');
-            profileResponse = ProfileResponse.fromJson(data);
-          });
-        }*/
-
         setState(() {
-          print('thisOneGetCall ${profileResponse?.name}');
           profileResponse = ProfileResponse.fromJson(data);
         });
+      }else if(data['isNotificationCount'] == 'notificationCount') {
+       print('flutterNotificaitonCount ${data['unReadNotificationCount']}');
+       setState(() {
+         notificationCount = data['unReadNotificationCount'];
+       });
 
-        print('profileRespons ${profileResponse!.toJson()}');
       } else {
         final UserInfo userInfo = UserInfo.fromJson(data);
         var box = await Hive.openBox<UserInfo>(Config.USER_INFO_BOX);
@@ -1508,9 +1586,9 @@ Future<String> generateBranchLink(String pageUrl,String text) async {
 
 
   cropImageCall(File imgFile, String imageType) async {
-    String? croppedImagePath = await cropImage(imgFile);
-    print("croppedImagePath $croppedImagePath");
-    croppedImageXFile.add(XFile(croppedImagePath!));
+   // String? croppedImagePath = await cropImage(imgFile);
+   // print("croppedImagePath $croppedImagePath");
+    croppedImageXFile.add(XFile(imgFile.path!));
     setState(() {
       isLoading = true;
     });
@@ -1518,7 +1596,8 @@ Future<String> generateBranchLink(String pageUrl,String text) async {
     uploadImages(croppedImageXFile, imageType);
   }
 
-  Future<void> uploadImages(List<XFile> imageFiles, String imageType) async {
+
+   Future<void> uploadImages(List<XFile> imageFiles, String imageType) async {
     final dio = Dio();
     const url = 'https://api.savemax.com/imageservice/uploadMultipleFiles';
 
@@ -1548,6 +1627,7 @@ Future<String> generateBranchLink(String pageUrl,String text) async {
           print('responseDataprofileImage : $responseData');
           _webViewController.runJavaScript('getFileBytesData(`$responseData`)');
         } else {
+          print('responseDataprofileImage2 : $responseData');
           _webViewController
               .runJavaScript('getFileBytesDataListing(`$responseData`)');
         }
@@ -1558,6 +1638,7 @@ Future<String> generateBranchLink(String pageUrl,String text) async {
       print('Error occurred: $e');
     }
   }
+
 
   void showPermissionSettingsDialog(BuildContext context, String msg) {
     showDialog(
